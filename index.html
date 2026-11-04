@@ -4,11 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Islamify By Alezify — Qur'ān · Hadith · Sunan · Prophets · AI</title>
+<!-- ✅ FAVICON: inline SVG emoji, no extra file needed -->
+<link rel="icon" type="image/svg+xml"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☪️</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<!-- Google Identity Services -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
+/* ── original styles unchanged (compressed for brevity, same as your file) ── */
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
   --primary:#1e5b4f;--primary-light:#2e7d6b;--primary-dark:#0f3d34;
@@ -694,7 +699,7 @@ const RECITERS = [
 ];
 
 /* ============================================================
-   PROPHET STORIES — 25 Prophets, detailed biographies
+   PROPHET STORIES
    ============================================================ */
 const PROPHETS = [
 {n:1, name:"Adam", ar:"آدم", title:"The First Man & Prophet", era:"Beginning of humanity", mention:"25 times in the Qur'ān",
@@ -905,7 +910,7 @@ lesson:`The Prophet ﷺ teaches us: (1) Truthfulness is the foundation of all le
 ];
 
 /* ============================================================
-   SUNAN DATA — expanded to 250+
+   SUNAN DATA
    ============================================================ */
 const SUNAN = [
 {cat:"Waking Up", icon:"🌅", items:[
@@ -1305,6 +1310,43 @@ function setAyahMemorized(n,i,val){
   syncProgressToCloud();
 }
 
+/* ============================================================
+   FULL-SURAH MEMORISED TOGGLE (NEW)
+   ============================================================ */
+function markFullSurah(n, val){
+  const s = SURAHS.find(x=>x.n===n);
+  if(!s) return;
+  if(val){
+    const p = getSurahProgress(n);
+    p.started = true;
+    p.lastVisit = Date.now();
+    p.memorized = [];
+    for(let i=1;i<=s.verses;i++) p.memorized.push(i);
+    progress[n] = p;
+  } else {
+    progress[n] = {memorized:[], started:false, lastVisit:Date.now()};
+  }
+  saveProgress();
+  syncProgressToCloud();
+  renderAyahs();
+  updateFullSurahStatus(n);
+  renderSurahGrid();
+}
+
+function updateFullSurahStatus(n){
+  const s = SURAHS.find(x=>x.n===n);
+  const p = getSurahProgress(n);
+  const el = document.getElementById('fullSurahStatus');
+  if(!el || !s) return;
+  if(p.memorized.length >= s.verses){
+    el.innerHTML = `<span class="badge done">✅ Entire surah marked as memorized</span>`;
+  } else if(p.memorized.length > 0){
+    el.innerHTML = `<span class="badge prog">${p.memorized.length} / ${s.verses} verses marked</span>`;
+  } else {
+    el.textContent = 'No verses marked yet.';
+  }
+}
+
 /* ============ TABS ============ */
 $$('nav a').forEach(a=>{
   a.addEventListener('click', ()=>{
@@ -1356,7 +1398,7 @@ function renderSurahGrid(){
         <span class="badge ${s.rev==='Madani'?'madani':''}">${s.rev}</span>
         <span class="badge">${s.verses} verses</span>
         <span class="badge">Juz ${s.juz}</span>
-        ${p.memorized.length? `<span class="badge ${pct===100?'done':'prog'}">${pct}%</span>`:''}
+        ${p.memorized.length? `<span class="badge ${pct===100?'done':'prog'}">${pct===100?'✓ Full':pct+'%'}</span>`:''}
       </div>
       ${p.memorized.length? `<div class="mini-prog"><span style="width:${pct}%"></span></div>`:''}
     `;
@@ -1451,7 +1493,7 @@ async function openSurah(n){
         <label>From ayah</label><input type="number" id="chunkFrom" value="1" min="1" max="${s.verses}">
         <label>to</label><input type="number" id="chunkTo" value="${Math.min(3,s.verses)}" min="1" max="${s.verses}">
         <button id="startChunkBtn">Start repeat session</button>
-        <button class="ghost" id="markChunkBtn">Mark memorized</button>
+        <button class="ghost" id="markChunkBtn">Mark chunk memorized</button>
       </div>
       <div id="repeatBox" class="repeat-box hidden">
         <div class="count" id="repCount">0</div>
@@ -1461,6 +1503,15 @@ async function openSurah(n){
           <button id="nextRepBtn">Recite aloud (count)</button>
           <button class="ghost" id="stopRepBtn">Stop</button>
         </div>
+      </div>
+      <!-- ✅ NEW: whole-surah memorised toggle -->
+      <div style="margin-top:.8rem;border-top:1px dashed var(--border);padding-top:.8rem">
+        <h4 style="margin-bottom:.4rem">Entire surah</h4>
+        <div class="mem-row">
+          <button id="markFullSurahBtn">✅ Mark full surah memorized</button>
+          <button class="ghost" id="unmarkFullSurahBtn">↺ Unmark full surah</button>
+        </div>
+        <div style="font-size:.78rem;color:var(--text-light);margin-top:.3rem" id="fullSurahStatus"></div>
       </div>
     </div>
     <div class="section-title"><i>📝</i> Verses</div>
@@ -1488,13 +1539,21 @@ async function openSurah(n){
   $('#markChunkBtn').addEventListener('click', ()=>markChunk(s));
   $('#stopRepBtn').addEventListener('click', ()=>{ if(window._repTimer){clearInterval(window._repTimer); window._repTimer=null;} $('#repeatBox').classList.add('hidden'); });
 
+  /* NEW handlers */
+  $('#markFullSurahBtn').addEventListener('click', ()=>{
+    if(confirm(`Mark all ${s.verses} verses of ${s.en} as memorized?`)) markFullSurah(s.n, true);
+  });
+  $('#unmarkFullSurahBtn').addEventListener('click', ()=>{
+    if(confirm(`Remove all memorization marks for ${s.en}?`)) markFullSurah(s.n, false);
+  });
+
   await loadSurahVerses(s.n);
 }
 
 async function loadSurahVerses(n){
   const container = $('#ayahContainer');
   if(!container) return;
-  if(cache['s'+n]){ currentAyahs = cache['s'+n]; renderAyahs(); return; }
+  if(cache['s'+n]){ currentAyahs = cache['s'+n]; renderAyahs(); updateFullSurahStatus(n); return; }
   try{
     const url = `https://api.alquran.cloud/v1/surah/${n}/editions/quran-uthmani,en.sahih`;
     const res = await fetch(url);
@@ -1504,6 +1563,7 @@ async function loadSurahVerses(n){
     currentAyahs = ar.map((a,i)=>({i:i+1,ar:a.text,en:en[i].text,audio:`https://cdn.islamic.network/quran/audio/128/${settings.reciter}/${a.number}.mp3`}));
     cache['s'+n] = currentAyahs; saveCache();
     renderAyahs();
+    updateFullSurahStatus(n);
   }catch(err){
     container.innerHTML = `<div class="loading" style="color:var(--danger)">
       <div>⚠️ Could not load verses (offline?).</div>
@@ -1560,6 +1620,7 @@ function renderAyahs(){
     card.classList.toggle('mem', !cur);
     b.classList.toggle('on', !cur);
     b.textContent = !cur ? '✓ Memorized' : 'Mark';
+    updateFullSurahStatus(s.n);
   }));
 }
 
@@ -1594,7 +1655,7 @@ function startChunkSession(s){
     $('#repCount').textContent = count;
     if(count>=target){
       $('#repLbl').textContent = '✅ Target reached — now hide and recite from memory!';
-      $('#repPrompt').innerHTML = '<em style="color:var(--text-light);font-family:Inter,sans-serif;font-size:.9rem">Say it without looking. Then click "Mark memorized."</em>';
+      $('#repPrompt').innerHTML = '<em style="color:var(--text-light);font-family:Inter,sans-serif;font-size:.9rem">Say it without looking. Then click "Mark chunk memorized."</em>';
     }
   };
 }
@@ -1604,6 +1665,7 @@ function markChunk(s){
   if(isNaN(from)||isNaN(to)||from<1||to>s.verses||from>to){ alert('Please enter a valid verse range.'); return; }
   for(let i=from;i<=to;i++) setAyahMemorized(s.n, i, true);
   renderAyahs();
+  updateFullSurahStatus(s.n);
   alert(`Marked verses ${from}–${to} of ${s.en} as memorized. May God bless your effort.`);
 }
 
@@ -2044,7 +2106,6 @@ function buildAIIndex(){
       aiIndex.push({type:'sunnah', title:it.t, text:`${it.t} (${it.s})`, source:`1,000 Sunan — ${cat.cat}`, searchText:(it.t + ' ' + it.s + ' ' + cat.cat).toLowerCase()});
     });
   });
-  // Ayat al-Kursi & key verses
   const keyVerses = [
     {ar:"اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ", en:"Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth.", ref:"Al-Baqarah 2:255 (Ayat al-Kursi)"},
     {ar:"فَإِنَّ مَعَ الْعُسْرِ يُسْرًا ۝ إِنَّ مَعَ الْعُسْرِ يُسْرًا", en:"For indeed, with hardship [will be] ease. Indeed, with hardship [will be] ease.", ref:"Ash-Sharh 94:5-6"},
@@ -2060,7 +2121,6 @@ function buildAIIndex(){
   keyVerses.forEach(v=>{
     aiIndex.push({type:'ayah', title:v.ref, text:v.ar + '\n\n' + v.en, source:`Qur'ān — ${v.ref}`, searchText:(v.en + ' ' + v.ar + ' ' + v.ref).toLowerCase()});
   });
-  // Key hadiths (Bukhari)
   const keyHadiths = [
     {en:"Actions are judged by intentions, and every person will have what he intended.", narrator:"Umar ibn al-Khattab", ref:"Bukhari 1"},
     {en:"The most beloved deeds to Allah are those done consistently, even if they are small.", narrator:"Aisha", ref:"Bukhari 6465"},
@@ -2152,9 +2212,7 @@ function retrievalAnswer(question){
     const search = item.searchText || item.text.toLowerCase();
     for(const t of qTokens){
       if(search.includes(t)){
-        // Boost if the term appears in the title
         score += item.title.toLowerCase().includes(t) ? 3 : 1;
-        // Count occurrences
         let idx = 0, count = 0;
         while((idx = search.indexOf(t, idx)) !== -1 && count < 5){ count++; idx += t.length; }
         score += count * 0.5;
@@ -2168,7 +2226,6 @@ function retrievalAnswer(question){
   const top = scored.slice(0, 5);
   const best = top[0].item;
 
-  // Build a response
   let text = '';
   if(best.type === 'prophet'){
     const story = best.text.split('\n\nLessons:')[0];
@@ -2186,7 +2243,6 @@ function retrievalAnswer(question){
     text = best.text;
   }
 
-  // Add related items
   if(top.length > 1){
     const related = top.slice(1, 4).map(s=>`• ${s.item.title}`).join('\n');
     if(related) text += `\n\n**Related:**\n${related}`;
@@ -2205,7 +2261,6 @@ async function loadNeuralModel(){
     env.allowRemoteModels = true;
     env.useBrowserCache = true;
     neuralEmbedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', { quantized: true });
-    // Pre-embed index
     $('#aiStatus').textContent = 'Neural (indexing…)';
     await buildNeuralIndex();
     updateAIStatus();
@@ -2224,7 +2279,6 @@ async function loadNeuralModel(){
 let neuralVectors = [];
 async function buildNeuralIndex(){
   neuralVectors = [];
-  // Only embed a subset for speed — 60 items
   const items = aiIndex.slice(0, 200);
   for(let i=0; i<items.length; i++){
     const it = items[i];
@@ -2548,7 +2602,6 @@ function startHourlyInterval(){
   }, 60 * 60 * 1000);
 }
 
-/* test notification */
 document.addEventListener('click', e=>{
   if(e.target && e.target.id === 'testNotifBtn'){
     if(!('Notification' in window)){ alert('Notifications not supported.'); return; }
@@ -2619,21 +2672,61 @@ function renderProgress(){
 }
 
 /* ============================================================
-   GOOGLE SIGN-IN
+   GOOGLE SIGN-IN — fixed to prevent 401 invalid_client
    ============================================================ */
+/*
+   ⚠️ IMPORTANT — how to make Google Sign-In work:
+
+   1. Go to https://console.cloud.google.com/auth/clients
+      → Create client → Application type: Web application.
+   2. Under "Authorized JavaScript origins" add the EXACT origin
+      where you serve this file. Examples:
+        http://localhost:8000        (python -m http.server 8000)
+        https://yourdomain.com
+      DO NOT add a trailing slash. DO NOT use file://.
+   3. Copy the generated Client ID and paste it below.
+   4. If the OAuth consent screen is in "Testing" status, only
+      test users you added can sign in. Publish the app to allow
+      any Google account.
+   5. file:// / opening the HTML directly will ALWAYS fail because
+      the browser sends origin "null", which Google will not accept.
+      Run a local server instead.
+
+   The client ID originally in the file was invalid → "Error 401:
+   invalid_client". Replace it with YOUR OWN.
+*/
+const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com'; // ← REPLACE
+
 function handleCredentialResponse(response){
   try{
     const payload = JSON.parse(atob(response.credential.split('.')[1]));
     currentUser = { name: payload.name, email: payload.email, picture: payload.picture, sub: payload.sub, ts: Date.now() };
     localStorage.setItem(LS_USER, JSON.stringify(currentUser));
     renderSignInButton();
-    // Cloud sync placeholder
     syncProgressToCloud();
   }catch(e){ console.warn('Sign-in parse failed', e); }
 }
 
 function renderSignInButton(){
   const btn = $('#signinBtn');
+
+  /* If opened from file://, Google will always reject the origin */
+  if(location.protocol === 'file:' && !currentUser){
+    btn.textContent = '🔒 Sign in (needs http)';
+    btn.onclick = ()=>{
+      alert(
+        'Google Sign-In does not work when you open the HTML file directly.\n\n' +
+        'Please serve the app over http:// or https://.\n\n' +
+        'Quick local server:\n' +
+        '  1. Open a terminal in this folder\n' +
+        '  2. Run: python -m http.server 8000\n' +
+        '  3. Visit: http://localhost:8000\n\n' +
+        'Then add http://localhost:8000 to your Google OAuth client\'s "Authorized JavaScript origins".'
+      );
+    };
+    return;
+  }
+
   if(currentUser){
     btn.classList.add('logged-in');
     btn.innerHTML = `<div class="user-chip"><img class="avatar" src="${currentUser.picture}" alt="${currentUser.name}" referrerpolicy="no-referrer"><span class="name">${escapeHtml(currentUser.name.split(' ')[0])}</span></div>`;
@@ -2651,28 +2744,39 @@ function renderSignInButton(){
     btn.classList.remove('logged-in');
     btn.innerHTML = '👤 Sign in';
     btn.onclick = ()=>{
-      if(window.google && google.accounts && google.accounts.id){
-        google.accounts.id.prompt();
-      } else {
-        alert('Google Sign-In is loading or unavailable offline. Please try again in a moment. Progress is stored locally regardless.');
+      if(!window.google || !google.accounts || !google.accounts.id){
+        alert('Google Sign-In library is not loaded. Check your internet connection and refresh.');
+        return;
       }
+      if(!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID.startsWith('YOUR_')){
+        alert(
+          'Google Sign-In is not configured yet.\n\n' +
+          'Open this file and replace GOOGLE_CLIENT_ID with your own OAuth client ID from:\n' +
+          'https://console.cloud.google.com/auth/clients\n\n' +
+          'Also add this origin to "Authorized JavaScript origins":\n' +
+          location.origin
+        );
+        return;
+      }
+      google.accounts.id.prompt();
     };
   }
 }
 
 function setupGoogleSignIn(){
   if(!window.google || !google.accounts || !google.accounts.id) return;
+  if(!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID.startsWith('YOUR_')) return; // don't init with placeholder
   try{
     google.accounts.id.initialize({
-      client_id: '262118491652-sengpgv52vp16p71jj4emvuqfrnqpkt7.apps.googleusercontent.com',
+      client_id: GOOGLE_CLIENT_ID,
       callback: handleCredentialResponse,
       auto_select: false,
-      cancel_on_tap_outside: true
+      cancel_on_tap_outside: true,
+      ux_mode: 'popup'
     });
   }catch(e){ console.warn('GSI init', e); }
 }
 
-// Retry GSI setup a few times (script loads async)
 let gsiAttempts = 0;
 const gsiTimer = setInterval(()=>{
   gsiAttempts++;
@@ -2683,10 +2787,8 @@ const gsiTimer = setInterval(()=>{
   if(gsiAttempts > 20) clearInterval(gsiTimer);
 }, 500);
 
-// Cloud sync stub (would connect to backend; currently local-only)
 function syncProgressToCloud(){
   if(!currentUser) return;
-  // Store a snapshot keyed by user id locally for now
   try{
     const snapshot = { progress, hadithMem, sunan: sunanState, ts: Date.now() };
     localStorage.setItem('islamify_cloud_' + currentUser.sub, JSON.stringify(snapshot));
@@ -2740,10 +2842,9 @@ function initGate(){
 }
 
 /* ============================================================
-   SERVICE WORKER (for notifications while backgrounded where supported)
+   SERVICE WORKER (optional)
    ============================================================ */
 if('serviceWorker' in navigator && location.protocol === 'https:' || location.hostname === 'localhost'){
-  // Best-effort SW registration (requires sw.js file to exist alongside)
   navigator.serviceWorker.register('sw.js').then(reg=>{
     console.log('SW registered', reg.scope);
   }).catch(err=>{
@@ -2760,10 +2861,8 @@ initGate();
 setupPrayer();
 setupHourly();
 renderSignInButton();
-// Rebuild AI index when data loads
 setTimeout(()=>{ if(!aiIndex.length) buildAIIndex(); }, 1000);
 
-// Update hourly status on load
 document.addEventListener('visibilitychange', ()=>{
   if(document.visibilityState === 'visible'){
     if(hourlyEnabled && !hourlyInterval) startHourlyInterval();
