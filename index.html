@@ -3,7 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Islamify By Alezify — Qur'ān · Hadith · Sunan · Prophets · AI</title>
+<meta name="description" content="Islamify v1 by Alezify — the most complete offline Islamic web app: Qur'ān, Sahih al-Bukhari, 1000+ Sunan, 25 Prophets, prayer companion, and a real on-device Qwen 3 0.6B AI assistant.">
+<title>Islamify Pro v1 By Alezify — Qur'ān · Hadith · Sunan · Prophets · Qwen 3 AI</title>
+<!--
+  ═══════════════════════════════════════════════════════════════
+  ISLAMIFY CHANGELOG
+  v1 (initial upgrade from clean base):
+   • NEW: Real generative AI — Qwen 3 0.6B runs fully on-device via
+     WebLLM/WebGPU (streaming answers, one-time ~500MB cached model,
+     /no_think fast mode, stop-generation button, chat memory,
+     clear-chat). Answers are grounded (RAG) in this site's Qur'ān,
+     Bukhari, Sunan and Prophet-stories library and cite sources.
+   • SEARCH: Arabic-aware normalization (diacritics, hamza/alef
+     forms, taa-marbuta, yaa) across Qur'ān, Hadith and AI index;
+     ranked scoring for surah results with live <mark> highlighting.
+   • SEARCH: Global palette (Ctrl+K / /) now also searches the 25
+     Prophet stories, Sunnah categories and the full Bukhari corpus
+     (instant, cached index) in addition to surahs, verses (2:255)
+     and tabs.
+   • UI/UX: tab transition animations, AI model-download progress
+     bar, streaming caret, typing dots, clear-chat button, updated
+     hero, status chips, refined AI tab copy and privacy table.
+   • KEPT: every existing tab, feature and API integration intact.
+  ═══════════════════════════════════════════════════════════════
+-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
@@ -360,6 +383,29 @@ body.focus :is(.hi,nav,footer,.hero,.head-actions){display:none!important}body.f
 @media print{.hi,nav,footer,.hero,#ui-fabs,#ui-bar,.gate{display:none!important}body{background:#fff!important}}
 .ui-in2{border:1px solid var(--border);background:var(--card);color:var(--text);padding:.4rem .6rem;border-radius:8px;font:inherit;font-size:.88rem}
 #ui-more{font-size:1.1rem}
+
+/* =========== V1 POLISH =========== */
+mark{background:linear-gradient(0deg,rgba(200,168,107,.38),rgba(200,168,107,.38));color:inherit;border-radius:3px;padding:0 .12em}
+html[data-theme=dark] mark,html[data-theme=oled] mark{background:rgba(200,168,107,.28);color:#f2e6c9}
+#tab-quran,#tab-hadith,#tab-sunan,#tab-stories,#tab-ai,#tab-memorize,#tab-prayer,#tab-progress{animation:tabIn .3s ease}
+@keyframes tabIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#aiProgWrap{display:none;padding:.55rem 1.2rem;background:var(--card);border-top:1px solid var(--border)}
+#aiProgWrap.on{display:block}
+#aiProgTrack{height:6px;background:var(--border);border-radius:6px;overflow:hidden}
+#aiProgBar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--primary));transition:width .3s;border-radius:6px}
+#aiProgLabel{font-size:.72rem;color:var(--text-light);margin-top:.35rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ai-clear{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:inherit;font-size:.75rem;padding:.3rem .6rem;border-radius:50px;cursor:pointer;font-weight:600}
+.ai-clear:hover{background:rgba(255,255,255,.25)}
+.ai-caret{display:inline-block;width:.55em;height:1em;vertical-align:-.15em;background:currentColor;margin-left:2px;border-radius:2px;animation:aiBlink 1s steps(2) infinite}
+@keyframes aiBlink{50%{opacity:0}}
+.ai-msg.bot .dots{display:inline-flex;gap:4px;padding:.2rem 0}
+.ai-msg.bot .dots i{width:7px;height:7px;border-radius:50%;background:var(--text-light);opacity:.5;animation:dots 1.2s ease infinite}
+.ai-msg.bot .dots i:nth-child(2){animation-delay:.15s}.ai-msg.bot .dots i:nth-child(3){animation-delay:.3s}
+@keyframes dots{0%,60%,100%{transform:none;opacity:.45}30%{transform:translateY(-4px);opacity:1}}
+.ai-msg.bot .src{display:block;font-size:.75rem;color:var(--text-light);margin-top:.4rem;font-style:italic;border-top:1px dashed var(--border);padding-top:.4rem}
+.grid-count{font-size:.8rem;color:var(--text-light);margin:.4rem 0 .6rem}
+.grid-count b{color:var(--primary)}
+#pall .pal-hl{color:var(--accent-light)}
 </style>
 <style id="ui-lib">
 #ui-vc{position:fixed;left:.7rem;bottom:.7rem;background:var(--card);color:var(--text-light);border:1px solid var(--border);border-radius:99px;padding:.3rem .8rem;font-size:.75rem;z-index:890;box-shadow:0 2px 8px rgba(0,0,0,.12)}
@@ -443,9 +489,9 @@ body.blurbg{filter:blur(14px)}
 
 <main class="container">
   <section class="hero" id="hero">
-    <div class="pill">Islamify · Qur'ān + Bukhari + 1000+ Sunan + Prophets + AI</div>
+    <div class="pill">Islamify Pro v1 · Qur'ān + Bukhari + 1000+ Sunan + Prophets + Qwen 3 AI</div>
     <h1>Read. Understand. Memorize. Live.</h1>
-    <p>All 114 surahs, the complete Sahih al-Bukhari, 250+ daily Sunan, detailed lives of the 25 Prophets, verse-by-verse audio from 10 reciters, an offline AI assistant trained on this site's knowledge, and a gentle prayer companion. Download once — read the Qur'ān and hadith offline; audio, prayer times, and Google sign-in/sync still need internet.</p>
+    <p>All 114 surahs, the complete Sahih al-Bukhari, 250+ daily Sunan, detailed lives of the 25 Prophets, verse-by-verse audio from 10 reciters, a real generative AI — <strong>Qwen 3 0.6B running entirely on your device</strong>, grounded in this site's library with cited sources — and a gentle prayer companion. Download once — read the Qur'ān and hadith offline; audio, prayer times, and Google sign-in/sync still need internet.</p>
   </section>
 
 
@@ -521,16 +567,18 @@ body.blurbg{filter:blur(14px)}
 
   <!-- AI TAB -->
   <section id="tab-ai" class="hidden">
-    <div class="section-title"><i>🤖</i> Ask Islamify AI</div>
+    <div class="section-title"><i>🤖</i> Ask Islamify AI — now powered by Qwen 3</div>
     <div class="overview" style="margin-bottom:1rem">
-      Ask any question about Islam. The assistant searches this site's full knowledge base — Qur'ān, Sahih al-Bukhari, Sunan, and Prophet stories — and returns grounded answers with sources. <strong>Questions are answered on your device and are never sent to a server.</strong> (Optional Neural Mode downloads its model once from a CDN.) <em>This assistant is not a scholar and does not issue fatwas — for rulings, ask a qualified scholar.</em> When you enable <em>Neural Mode</em>, it loads a small (~22MB) transformer model that caches locally for improved semantic search.
+      Ask any question about Islam. Enable <strong>Qwen 3 Neural Mode</strong> once and a real language model — <strong>Qwen 3 0.6B</strong> — downloads to your browser and runs <em>entirely on your device</em>, streaming natural, complete answers (not just snippets). Every answer is grounded in this site's knowledge base — Qur'ān, Sahih al-Bukhari, Sunan, and Prophet stories — and cites its sources. Without the model, the assistant still answers instantly from the same library via smart retrieval. <em>This assistant is not a scholar and does not issue fatwas — for rulings, ask a qualified scholar.</em>
     </div>
     <div class="ai-wrap">
       <div class="ai-header">
         <div class="ai-title"><i>✨</i><span>Islamify Assistant</span></div>
         <span class="ai-status" id="aiStatus">Retrieval · Offline</span>
-        <button class="ai-toggle" id="aiNeuralToggle">⚡ Enable Neural Mode</button>
+        <button class="ai-clear" id="aiClear" title="Clear conversation">🧹 Clear</button>
+        <button class="ai-toggle" id="aiNeuralToggle">⚡ Enable Qwen 3 (on-device)</button>
       </div>
+      <div id="aiProgWrap"><div id="aiProgTrack"><div id="aiProgBar"></div></div><div id="aiProgLabel">Preparing…</div></div>
       <div class="ai-messages" id="aiMessages"></div>
       <div class="ai-suggest" id="aiSuggest">
         <button data-q="What does the Quran say about patience?">Quran on patience</button>
@@ -543,7 +591,7 @@ body.blurbg{filter:blur(14px)}
         <input id="aiInput" placeholder="Ask about the Qur'ān, hadith, sunan, or prophets…" autocomplete="off">
         <button id="aiSend">Send</button>
       </div>
-      <div class="ai-note">🔒 Private · Free forever. Answers cite their source. Not a substitute for a qualified scholar.</div>
+      <div class="ai-note">🔒 Private · Free forever · Qwen 3 answers are generated on your device and cite their source. Not a substitute for a qualified scholar.</div>
     </div>
   </section>
 
@@ -1308,7 +1356,7 @@ const LS_LOCATION = 'islamify_location_v2';
 const LS_REMIND = 'islamify_reminders_v2';
 const LS_USER = 'islamify_user_v2';
 const LS_HOURLY = 'islamify_hourly_v2';
-const LS_AI_NEURAL = 'islamify_ai_neural_v2';
+const LS_AI_NEURAL = 'islamify_ai_neural_v3';
 
 let cache = JSON.parse(localStorage.getItem(LS_CACHE) || '{}');
 let progress = JSON.parse(localStorage.getItem(LS_PROG) || '{}');
@@ -1352,8 +1400,10 @@ let currentUser = JSON.parse(localStorage.getItem(LS_USER) || 'null');
 
 /* ai */
 let aiNeural = false;
-let neuralEmbedder = null;
 let aiIndex = [];
+let llmEngine = null, llmReady = false, llmLoading = false;
+let aiHistory = [];
+let aiStreaming = false;
 
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
@@ -1399,16 +1449,76 @@ $('#headPrayer').addEventListener('click', ()=>{
   if(link) link.click();
 });
 
+/* ============ ARABIC-AWARE SEARCH HELPERS (v1) ============ */
+function normAr(s){
+  return (s||'').toString().toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')                 /* Latin macrons/diacritics: Mūsā→musa, ḥ→h */
+    .replace(/[\u064B-\u0652\u0653-\u065F\u0670\u0640]/g,'') /* harakat + tatweel */
+    .replace(/[أإآٱ]/g,'ا')
+    .replace(/ى/g,'ي')
+    .replace(/ة/g,'ه')
+    .replace(/ؤ/g,'و')
+    .replace(/ئ/g,'ي')
+    .replace(/ء/g,'')
+    .replace(/[ʿʼ'´`]/g,'')                          /* ayin, hamza marks, apostrophes */
+    .replace(/\s+/g,' ').trim();
+}
+function hiMark(text,q){
+  text = text==null ? '' : String(text);
+  if(!q) return escapeHtml(text);
+  const nq = normAr(q);
+  if(!nq) return escapeHtml(text);
+  let hit = false;
+  const out = text.split(/(\s+)/).map(part=>{
+    if(!part.trim()) return escapeHtml(part);
+    const np = normAr(part);
+    if(np && (np.indexOf(nq)!==-1 || (nq.length>2 && np.length>2 && nq.indexOf(np)!==-1))){
+      hit = true;
+      return '<mark>'+escapeHtml(part)+'</mark>';
+    }
+    return escapeHtml(part);
+  });
+  return hit ? out.join('') : escapeHtml(text);
+}
+function surahScore(s, nq, rawQ){
+  if(!nq) return 1;
+  const nEn = normAr(s.en), nMean = normAr(s.meaning), nAr = normAr(s.ar);
+  if(String(s.n) === rawQ || String(s.n) === nq) return 100;
+  if(nEn.indexOf(nq) === 0) return 60;
+  if(nAr.indexOf(nq) === 0) return 55;
+  if(nEn.indexOf(nq) !== -1) return 40;
+  if(nAr.indexOf(nq) !== -1) return 35;
+  if(nMean.indexOf(nq) !== -1) return 30;
+  const words = (nEn+' '+nMean).split(' ');
+  if(nq.length>1 && words.some(w=>w && w.indexOf(nq)===0)) return 25;
+  if(nq.length>2 && words.some(w=>w && w.length>2 && nq.indexOf(w)===0)) return 20;
+  return 0;
+}
+
 /* ============ QURAN GRID ============ */
 function renderSurahGrid(){
-  const q = ($('#searchInput').value||'').trim().toLowerCase();
+  const rawQ = ($('#searchInput').value||'').trim();
+  const q = rawQ.toLowerCase();
+  const nq = normAr(rawQ);
   const rev = $('#filterRev').value;
   const grid = $('#surahGrid');
   grid.innerHTML = '';
+  const scored = [];
   SURAHS.forEach(s=>{
     if(rev!=='all' && s.rev!==rev) return;
-    const hay = (s.n+' '+s.en+' '+s.meaning+' '+s.ar).toLowerCase();
-    if(q && !hay.includes(q)) return;
+    const score = surahScore(s, nq, q);
+    if(score === 0) return;
+    scored.push({s, score});
+  });
+  if(rawQ) scored.sort((a,b)=>b.score - a.score || a.s.n - b.s.n);
+  const cnt = document.createElement('div');
+  cnt.className = 'grid-count';
+  cnt.innerHTML = rawQ
+    ? `<b>${scored.length}</b> surah${scored.length===1?'':'s'} match “${escapeHtml(rawQ)}”`
+    : `Showing all <b>${SURAHS.length}</b> surahs`;
+  grid.appendChild(cnt);
+  scored.forEach(({s})=>{
     const p = getSurahProgress(s.n);
     const pct = p.memorized.length ? Math.round(p.memorized.length/s.verses*100) : 0;
     const card = document.createElement('div');
@@ -1417,10 +1527,10 @@ function renderSurahGrid(){
       <div class="row1">
         <span class="num">${s.n}</span>
         <div style="flex:1">
-          <div class="en">${s.en}</div>
-          <div class="meaning">${s.meaning}</div>
+          <div class="en">${hiMark(s.en, rawQ)}</div>
+          <div class="meaning">${hiMark(s.meaning, rawQ)}</div>
         </div>
-        <div class="ar">${s.ar}</div>
+        <div class="ar">${hiMark(s.ar, rawQ)}</div>
       </div>
       <div class="meta">
         <span class="badge ${s.rev==='Madani'?'madani':''}">${s.rev}</span>
@@ -1809,14 +1919,16 @@ function populateChapterSelect(){
 }
 
 function applyHadithFilter(){
-  const q = ($('#hadithSearch').value||'').trim().toLowerCase();
+  const rawQ = ($('#hadithSearch').value||'').trim();
+  const q = rawQ.toLowerCase();
+  const nq = normAr(rawQ);
   const ch = $('#chapterSelect').value;
   filteredHadiths = allHadiths.filter(h=>{
     if(ch !== 'all' && String(h.chapterId) !== String(ch)) return false;
     if(!q) return true;
     return (h.narrator||'').toLowerCase().includes(q)
         || (h.english||'').toLowerCase().includes(q)
-        || (h.arabic||'').toLowerCase().includes(q);
+        || normAr(h.arabic||'').includes(nq);
   });
   currentPage = 1;
   renderHadithPage();
@@ -2107,14 +2219,14 @@ function openStory(n){
 function buildAIIndex(){
   aiIndex = [];
   SURAHS.forEach(s=>{
-    aiIndex.push({type:'surah', title:`Surah ${s.n} · ${s.en} (${s.meaning})`, text:s.overview + ' ' + s.meaning + ' ' + s.rev + ' ' + s.period, source:`Qur'ān — Surah ${s.n} ${s.en}`, searchText:(s.en + ' ' + s.meaning + ' ' + s.overview + ' ' + s.ar).toLowerCase()});
+    aiIndex.push({type:'surah', title:`Surah ${s.n} · ${s.en} (${s.meaning})`, text:s.overview + ' ' + s.meaning + ' ' + s.rev + ' ' + s.period, source:`Qur'ān — Surah ${s.n} ${s.en}`, searchText:normAr(s.en + ' ' + s.meaning + ' ' + s.overview + ' ' + s.rev + ' ' + s.period + ' ' + s.ar)});
   });
   PROPHETS.forEach(p=>{
-    aiIndex.push({type:'prophet', title:`Prophet ${p.name} — ${p.title}`, text:p.story + '\n\nLessons: ' + p.lesson, source:`Stories of the Prophets — ${p.name}`, searchText:(p.name + ' ' + p.title + ' ' + p.story + ' ' + p.lesson + ' ' + p.ar).toLowerCase()});
+    aiIndex.push({type:'prophet', title:`Prophet ${p.name} — ${p.title}`, text:p.story + '\n\nLessons: ' + p.lesson, source:`Stories of the Prophets — ${p.name}`, searchText:normAr(p.name + ' ' + p.title + ' ' + p.story + ' ' + p.lesson + ' ' + p.ar)});
   });
   SUNAN.forEach(cat=>{
     cat.items.forEach(it=>{
-      aiIndex.push({type:'sunnah', title:it.t, text:`${it.t} (${it.s})`, source:`1,000 Sunan — ${cat.cat}`, searchText:(it.t + ' ' + it.s + ' ' + cat.cat).toLowerCase()});
+      aiIndex.push({type:'sunnah', title:it.t, text:`${it.t} (${it.s})`, source:`1,000 Sunan — ${cat.cat}`, searchText:normAr(it.t + ' ' + it.s + ' ' + cat.cat)});
     });
   });
   // Ayat al-Kursi & key verses
@@ -2131,7 +2243,7 @@ function buildAIIndex(){
     {ar:"رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ", en:"Our Lord, give us in this world [that which is] good and in the Hereafter [that which is] good and protect us from the punishment of the Fire.", ref:"Al-Baqarah 2:201"}
   ];
   keyVerses.forEach(v=>{
-    aiIndex.push({type:'ayah', title:v.ref, text:v.ar + '\n\n' + v.en, source:`Qur'ān — ${v.ref}`, searchText:(v.en + ' ' + v.ar + ' ' + v.ref).toLowerCase()});
+    aiIndex.push({type:'ayah', title:v.ref, text:v.ar + '\n\n' + v.en, source:`Qur'ān — ${v.ref}`, searchText:normAr(v.en + ' ' + v.ar + ' ' + v.ref)});
   });
   // Key hadiths (Bukhari)
   const keyHadiths = [
@@ -2147,7 +2259,7 @@ function buildAIIndex(){
     {en:"Fear Allah wherever you are. Follow a bad deed with a good deed and it will erase it. And treat people with good character.", narrator:"Abu Dharr", ref:"Tirmidhi"}
   ];
   keyHadiths.forEach(h=>{
-    aiIndex.push({type:'hadith', title:h.ref, text:`"${h.en}"\n\n— Narrated by ${h.narrator}`, source:`Sahih al-Bukhari — ${h.ref}`, searchText:(h.en + ' ' + h.narrator + ' ' + h.ref).toLowerCase()});
+    aiIndex.push({type:'hadith', title:h.ref, text:`"${h.en}"\n\n— Narrated by ${h.narrator}`, source:`Sahih al-Bukhari — ${h.ref}`, searchText:normAr(h.en + ' ' + h.narrator + ' ' + h.ref)});
   });
   return aiIndex;
 }
@@ -2156,18 +2268,42 @@ function initAI(){
   if(aiIndex.length) return;
   buildAIIndex();
   $('#aiMessages').innerHTML = '';
-  addAIMessage('bot', "Assalamu alaikum! 👋 I'm your Islamify AI. I can answer questions about the Qur'ān, Sahih al-Bukhari, the daily Sunan, and the lives of the Prophets — all offline, with sources.\n\nTry: *\"What does the Quran say about patience?\"* or *\"Tell me about Prophet Musa.\"*");
+  addAIMessage('bot', "Assalamu alaikum! 👋 I'm your Islamify AI, powered by **Qwen 3 0.6B** running entirely on your device. I answer from the Qur'ān, Sahih al-Bukhari, the daily Sunan and the lives of the Prophets — with sources.\n\nRight now I'm in fast **Retrieval mode** (instant, fully offline). Tap ⚡ *Enable Qwen 3* above once for full generative answers — the model downloads once, then works offline forever.\n\nTry: *\"What does the Quran say about patience?\"* or *\"Tell me about Prophet Musa.\"*");
   aiNeural = localStorage.getItem(LS_AI_NEURAL) === '1';
   updateAIStatus();
-  if(aiNeural) loadNeuralModel();
+  if(aiNeural && !llmReady && !llmLoading) loadQwenModel();
 }
 
 function updateAIStatus(){
   const s = $('#aiStatus');
   if(!s) return;
-  if(aiNeural && neuralEmbedder) s.textContent = 'Neural · Offline';
-  else if(aiNeural) s.textContent = 'Neural (loading…)';
+  if(llmReady) s.textContent = 'Qwen 3 0.6B · Ready · On-device';
+  else if(llmLoading) s.textContent = 'Qwen 3 · Downloading…';
+  else if(aiNeural) s.textContent = 'Qwen 3 · Waiting';
   else s.textContent = 'Retrieval · Offline';
+}
+
+function setAISending(streaming){
+  const btn = $('#aiSend');
+  if(btn) btn.textContent = streaming ? '■ Stop' : 'Send';
+}
+
+function aiRenderText(t){
+  return escapeHtml(t).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+}
+
+/* Streaming-safe removal of Qwen3 <think> blocks */
+function filterThink(s){
+  s = s.replace(/<think>[\s\S]*?<\/think>/g,'').replace(/<\/?think>/g,'');
+  const open = s.lastIndexOf('<think>');
+  if(open !== -1) s = s.slice(0, open);
+  return s.trim();
+}
+
+function resetAIChat(){
+  aiHistory = [];
+  $('#aiMessages').innerHTML = '';
+  addAIMessage('bot', "Cleared. ✨ Assalamu alaikum — what would you like to learn about today?");
 }
 
 function addAIMessage(who, text, source){
@@ -2183,62 +2319,171 @@ function addAIMessage(who, text, source){
 
 async function askAI(question){
   if(!question.trim()) return;
+  if(aiStreaming){
+    try{ llmEngine.interruptGenerate(); }catch(e){}
+    return;
+  }
   addAIMessage('user', question);
   $('#aiInput').value = '';
+  const scroller = $('#aiMessages');
 
-  const typing = addAIMessage('bot', 'Thinking…');
-  typing.classList.add('typing');
-
-  let answer = null;
-
-  if(aiNeural && neuralEmbedder){
-    try{ answer = await neuralAnswer(question); }catch(e){ console.warn('Neural failed', e); }
+  if(llmReady){
+    /* ---- Qwen 3 generative mode: streaming, grounded, on-device ---- */
+    aiStreaming = true;
+    setAISending(true);
+    const bubble = addAIMessage('bot','');
+    bubble.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>';
+    try{
+      const ctxItems = retrievalItems(question, 4);
+      const messages = [{role:'system', content: buildSystemPrompt(ctxItems)}]
+        .concat(aiHistory.slice(-6))
+        .concat([{role:'user', content: question}]);
+      const stream = await llmEngine.chat.completions.create({
+        messages: messages,
+        stream: true,
+        temperature: 0.7,
+        max_tokens: 600
+      });
+      let raw = '';
+      for await (const chunk of stream){
+        const ch0 = chunk.choices && chunk.choices[0];
+        const delta = ch0 && ch0.delta ? (ch0.delta.content || '') : '';
+        if(!delta) continue;
+        raw += delta;
+        const shown = filterThink(raw);
+        if(shown) bubble.innerHTML = aiRenderText(shown) + '<span class="ai-caret"></span>';
+        scroller.scrollTop = scroller.scrollHeight;
+      }
+      const answer = filterThink(raw) || 'I could not generate an answer — please try again.';
+      let html = aiRenderText(answer);
+      const sources = ctxItems.slice(0,3).map(c=>c.item.source).join(' · ');
+      if(sources) html += `<span class="src">📚 Grounded in: ${escapeHtml(sources)}</span>`;
+      bubble.innerHTML = html;
+      aiHistory.push({role:'user', content: question}, {role:'assistant', content: answer});
+      if(aiHistory.length > 12) aiHistory = aiHistory.slice(-12);
+    }catch(e){
+      console.warn('Qwen generation failed', e);
+      const ans = retrievalAnswer(question);
+      if(ans && ans.text){
+        let html = aiRenderText(ans.text);
+        if(ans.sources) html += `<span class="src">📚 Sources: ${escapeHtml(ans.sources)}</span>`;
+        bubble.innerHTML = html;
+      } else {
+        bubble.innerHTML = "I couldn't finish that answer, and retrieval found no close match. Try rephrasing — or ask about a surah, a prophet, a hadith topic, or a daily sunnah.";
+      }
+    }
+    aiStreaming = false;
+    setAISending(false);
+    scroller.scrollTop = scroller.scrollHeight;
+    return;
   }
-  if(!answer) answer = retrievalAnswer(question);
 
+  /* ---- Fast Retrieval mode: instant, fully offline ---- */
+  const typing = addAIMessage('bot','');
+  typing.classList.add('typing');
+  typing.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>';
+  await new Promise(r=>setTimeout(r,150));
+  const answer = retrievalAnswer(question);
   typing.classList.remove('typing');
   if(answer && answer.text){
-    let html = escapeHtml(answer.text);
+    let html = aiRenderText(answer.text);
     if(answer.sources) html += `<span class="src">📚 Sources: ${escapeHtml(answer.sources)}</span>`;
     typing.innerHTML = html;
   } else {
-    typing.innerHTML = "I couldn't find a specific match in the knowledge base. Try rephrasing — or ask about a surah, a prophet, a hadith topic, or a daily sunnah. You can also enable Neural Mode for semantic understanding.";
+    typing.innerHTML = "I couldn't find a specific match in the knowledge base. Try rephrasing — or ask about a surah, a prophet, a hadith topic, or a daily sunnah. For full generative answers, enable ⚡ Qwen 3 above.";
   }
-  $('#aiMessages').scrollTop = $('#aiMessages').scrollHeight;
+  scroller.scrollTop = scroller.scrollHeight;
 }
 
-/* Simple keyword-based retrieval */
-const STOPWORDS = new Set('what is are the a an of and or in on to for about from with how why when where who whom which do does did be been was were will would should can could may might this that these those i you he she it we they my your his her its our their me him them as at by if not no yes so but also than then there here'.split(' '));
+/* Simple keyword-based retrieval — upgraded in v1 with stemming + synonyms */
+const STOPWORDS = new Set('what is are the a an of and or in on to for about from with how why when where who whom which do does did be been was were will would should can could may might this that these those i you he she it we they my your his her its our their me him them as at by if not no yes so but also than then there here say says said tell telling tell me mention verses chapter chapters really would could prophet messenger story stories'.split(' '));
+
+/* Concept synonyms so "patience" also finds "patient/sabr", "prayer" finds "salah", etc. */
+const Q_SYNONYMS = {
+  patience:'patient sabr persevere perseverance', patient:'patience sabr',
+  pray:'prayer salah salat praying', prays:'prayer salah', prayed:'prayer salah', prayer:'salah salat pray',
+  salah:'prayer salat', salat:'prayer salah',
+  fast:'fasting sawm', fasting:'sawm fast', sawm:'fasting ramadan',
+  charity:'zakat sadaqah giving', zakat:'charity sadaqah', sadaqah:'charity zakat giving',
+  forgive:'forgiveness mercy istighfar', forgiveness:'forgive mercy istighfar',
+  mercy:'rahmah forgive forgiveness', rahmah:'mercy forgiveness',
+  quran:'koran', koran:'quran',
+  anger:'angry calm', angry:'anger calm',
+  anxiety:'worry grief calm dhikr', worry:'anxiety grief calm dhikr', stress:'anxiety worry calm dhikr',
+  sad:'sadness grief patience', sadness:'sad grief patience', grief:'sadness patience sabr',
+  happy:'gratitude shukr thankful', gratitude:'thankful shukr happy',
+  knowledge:'ilm learn learning study', learn:'knowledge ilm study', study:'knowledge ilm learn',
+  death:'grave dying barzakh', dying:'death grave',
+  marriage:'marry spouse wife husband', marry:'marriage spouse wedding',
+  parents:'mother father family', mother:'parents family', father:'parents family',
+  children:'child son daughter family', child:'children family',
+  hijab:'modest dress modesty', modesty:'hijab modest',
+  hajj:'pilgrimage makkah', pilgrimage:'hajj umrah',
+  intention:'niyyah intentions niyyat', intentions:'intention niyyah',
+  dhikr:'remembrance zhikr', remembrance:'dhikr zhikr',
+  prophet:'prophets rasul nabi', prophets:'prophet rasul nabi', nabi:'prophet',
+  "du'a":'dua supplication', dua:"du'a supplication prayer", supplication:'dua',
+  Paradise:'jannah akhirah', jannah:'paradise heaven akhirah', hell:'jahannam nar', jahannam:'hell nar'
+};
+
+function expandToken(t){
+  const out = [t];
+  const syn = Q_SYNONYMS[t];
+  if(syn) out.push(...syn.split(' '));
+  let stem = t;
+  if(t.endsWith('ies') && t.length - 3 >= 4) stem = t.slice(0,-3) + 'y';
+  else for(const suf of ['ings','ing','ed','es','s']){ if(t.endsWith(suf) && t.length - suf.length >= 4){ stem = t.slice(0,-suf.length); break; } }
+  if(stem !== t) out.push(stem);
+  return out;
+}
 
 function tokenize(text){
-  return (text||'').toLowerCase().replace(/[^\w\u0600-\u06FF]+/g,' ').split(/\s+/).filter(w=>w && w.length>1 && !STOPWORDS.has(w));
+  return normAr(text).replace(/[^\w\u0600-\u06FF]+/g,' ').split(/\s+/).filter(w=>w && w.length>1 && !STOPWORDS.has(w));
 }
 
-function retrievalAnswer(question){
+/* Shared ranked retrieval — used by both the fast answers and Qwen RAG context.
+   v1: TF-IDF-lite weighting — rare, meaningful terms count more than words
+   that appear everywhere (like "Qur'ān" inside a Qur'ān app). */
+function retrievalItems(question, n){
   const qTokens = tokenize(question);
-  if(!qTokens.length) return null;
-
-  const qLower = question.toLowerCase();
+  if(!qTokens.length || !aiIndex.length) return [];
+  const variants = [];
+  qTokens.forEach(t=>expandToken(t).forEach(v=>{ if(v && v.length>=3 && variants.indexOf(v)===-1) variants.push(v); }));
+  if(!variants.length) return [];
+  /* document frequency per variant */
+  const df = new Map();
+  for(const item of aiIndex){
+    const search = item.searchText || item.text.toLowerCase();
+    for(const v of variants){ if(search.indexOf(v)!==-1) df.set(v, (df.get(v)||0)+1); }
+  }
+  const N = aiIndex.length;
+  const weight = v=>{
+    const f = (df.get(v)||1)/N;
+    return f<=0.25 ? 2 : (f<=0.6 ? 1 : 0.35);
+  };
   const scored = [];
   for(const item of aiIndex){
     let score = 0;
     const search = item.searchText || item.text.toLowerCase();
-    for(const t of qTokens){
-      if(search.includes(t)){
-        // Boost if the term appears in the title
-        score += item.title.toLowerCase().includes(t) ? 3 : 1;
-        // Count occurrences
-        let idx = 0, count = 0;
-        while((idx = search.indexOf(t, idx)) !== -1 && count < 5){ count++; idx += t.length; }
-        score += count * 0.5;
-      }
+    const tTitle = normAr(item.title);
+    for(const v of variants){
+      if(search.indexOf(v)===-1) continue;
+      const w = weight(v);
+      score += w * (tTitle.indexOf(v)!==-1 ? 3 : 1);
+      let idx = 0, count = 0;
+      while((idx = search.indexOf(v, idx)) !== -1 && count < 5){ count++; idx += v.length; }
+      score += count * 0.5 * w;
     }
     if(score > 0) scored.push({item, score});
   }
-  if(!scored.length) return null;
-
+  if(!scored.length) return [];
   scored.sort((a,b)=>b.score - a.score);
-  const top = scored.slice(0, 5);
+  return scored.slice(0, n || 5);
+}
+
+function retrievalAnswer(question){
+  const top = retrievalItems(question, 5);
+  if(!top.length) return null;
   const best = top[0].item;
 
   // Build a response
@@ -2269,94 +2514,105 @@ function retrievalAnswer(question){
   return {text, sources};
 }
 
-/* Neural with transformers.js — optional */
-async function loadNeuralModel(){
-  if(neuralEmbedder) return;
-  $('#aiStatus').textContent = 'Neural (loading model…)';
-  try{
-    const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2');
-    env.allowRemoteModels = true;
-    env.useBrowserCache = true;
-    neuralEmbedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', { quantized: true });
-    // Pre-embed index
-    $('#aiStatus').textContent = 'Neural (indexing…)';
-    await buildNeuralIndex();
-    updateAIStatus();
-    addAIMessage('bot', "✨ Neural Mode enabled. Semantic search is active — you can ask questions in natural language now.");
-  }catch(e){
-    console.warn('Neural load failed', e);
-    neuralEmbedder = null;
+/* ============================================================
+   QWEN 3 0.6B — real generative AI, 100% on-device (WebLLM/WebGPU)
+   One-time ~500MB download, cached by the browser, then offline.
+   ============================================================ */
+const QWEN_MODEL_ID = 'Qwen3-0.6B-q4f16_1-MLC';
+
+function buildSystemPrompt(ctxItems){
+  let ctx = '';
+  if(ctxItems && ctxItems.length){
+    ctx = ctxItems.map((c,i)=>{
+      const t = (c.item.text||'').replace(/\s+/g,' ').slice(0, 420);
+      return `[${i+1}] ${c.item.title} — ${t}`;
+    }).join('\n');
+  }
+  return 'You are Islamify Assistant, a warm, knowledgeable Muslim assistant inside the Islamify app.'
+    + ' Answer the user\u2019s question about Islam in simple, concise English (under 180 words).'
+    + (ctx ? ' Ground your answer primarily in the CONTEXT SOURCES below and cite them inline like (Qur\'an 2:255) or (Sahih al-Bukhari 1).' : ' Cite the Qur\'an or Sahih al-Bukhari wherever you can.')
+    + ' Never invent or paraphrase verses and hadith as quotes. If you are not sure, say so honestly and advise asking a qualified scholar for rulings — never issue fatwas.'
+    + ' Be kind, hopeful and practical. Do not show your reasoning steps — reply with the final answer only. /no_think'
+    + (ctx ? '\n\nCONTEXT SOURCES (from Islamify\'s library):\n' + ctx : '');
+}
+
+function aiShowProgress(on){
+  const w = $('#aiProgWrap');
+  if(w) w.classList.toggle('on', !!on);
+}
+
+async function loadQwenModel(){
+  if(llmReady || llmLoading) return;
+  if(!('gpu' in navigator)){
     aiNeural = false;
     localStorage.setItem(LS_AI_NEURAL, '0');
     updateAIStatus();
-    $('#aiNeuralToggle').textContent = '⚡ Enable Neural Mode';
-    addAIMessage('bot', "⚠️ Could not load the neural model (offline or CDN blocked). Retrieval mode is still fully functional and answers from the site's knowledge base.");
+    $('#aiNeuralToggle').textContent = '⚡ Enable Qwen 3 (on-device)';
+    addAIMessage('bot', "⚠️ Qwen 3 needs WebGPU (Chrome or Edge 113+). This browser doesn't support it yet, so I'll stay in fast Retrieval mode — every answer still comes from this site's authentic library, fully offline.");
+    return;
   }
-}
-
-let neuralVectors = [];
-async function buildNeuralIndex(){
-  neuralVectors = [];
-  // Only embed a subset for speed — 60 items
-  const items = aiIndex.slice(0, 200);
-  for(let i=0; i<items.length; i++){
-    const it = items[i];
+  llmLoading = true;
+  aiShowProgress(true);
+  const bar = $('#aiProgBar'), lbl = $('#aiProgLabel');
+  if(bar) bar.style.width = '0%';
+  if(lbl) lbl.textContent = 'Fetching WebLLM engine…';
+  try{
+    const webllm = await import('https://esm.run/@mlc-ai/web-llm');
+    let modelId = QWEN_MODEL_ID;
     try{
-      const out = await neuralEmbedder(it.searchText.slice(0,500), { pooling: 'mean', normalize: true });
-      neuralVectors.push({ item: it, vec: Array.from(out.data) });
+      const list = (webllm.prebuiltAppConfig && webllm.prebuiltAppConfig.model_list) || [];
+      const found = list.find(m=>m.model_id === QWEN_MODEL_ID)
+        || list.find(m=>/Qwen3-0\.6B/.test(m.model_id))
+        || list.find(m=>/Qwen2\.5-0\.5B-Instruct/.test(m.model_id));
+      if(found) modelId = found.model_id;
     }catch(e){}
-    if(i % 10 === 0) $('#aiStatus').textContent = `Neural (indexing ${i}/${items.length})`;
+    const engine = await webllm.CreateMLCEngine(modelId, {
+      initProgressCallback: p=>{
+        const pct = Math.round((p.progress || 0) * 100);
+        if(bar) bar.style.width = pct + '%';
+        if(lbl) lbl.textContent = p.text || ('Loading Qwen 3 0.6B… ' + pct + '%');
+        const s = $('#aiStatus');
+        if(s) s.textContent = 'Qwen 3 · ' + pct + '%';
+      }
+    });
+    llmEngine = engine;
+    llmReady = true;
+    llmLoading = false;
+    aiShowProgress(false);
+    updateAIStatus();
+    addAIMessage('bot', "✨ **Qwen 3 0.6B is ready.** I now write full, natural answers — streamed live, generated 100% on your device (nothing is sent to any server), grounded in this site's library with sources. Ask me anything.");
+  }catch(e){
+    console.warn('Qwen load failed', e);
+    llmReady = false;
+    llmLoading = false;
+    aiNeural = false;
+    localStorage.setItem(LS_AI_NEURAL, '0');
+    aiShowProgress(false);
+    updateAIStatus();
+    $('#aiNeuralToggle').textContent = '⚡ Enable Qwen 3 (on-device)';
+    addAIMessage('bot', "⚠️ Could not load Qwen 3 (offline, CDN blocked, or not enough GPU memory). Retrieval mode is still fully functional and answers from the site's knowledge base.");
   }
-}
-
-function cosineSim(a, b){
-  let dot=0, na=0, nb=0;
-  for(let i=0;i<a.length;i++){ dot += a[i]*b[i]; na += a[i]*a[i]; nb += b[i]*b[i]; }
-  if(!na || !nb) return 0;
-  return dot / (Math.sqrt(na) * Math.sqrt(nb));
-}
-
-async function neuralAnswer(question){
-  if(!neuralEmbedder || !neuralVectors.length) return null;
-  const qOut = await neuralEmbedder(question, { pooling: 'mean', normalize: true });
-  const qVec = Array.from(qOut.data);
-  const scored = neuralVectors.map(nv=>({ item: nv.item, score: cosineSim(qVec, nv.vec) }));
-  scored.sort((a,b)=>b.score - a.score);
-  const top = scored.slice(0, 5);
-  if(!top.length || top[0].score < 0.2) return null;
-  const best = top[0].item;
-  let text = '';
-  if(best.type === 'prophet'){
-    const story = best.text.split('\n\nLessons:')[0];
-    text = `**${best.title}**\n\n${story.slice(0, 900)}${story.length>900?'…':''}`;
-  } else if(best.type === 'surah'){
-    text = `**${best.title}**\n\n${best.text}`;
-  } else {
-    text = best.text;
-  }
-  if(top.length > 1){
-    const related = top.slice(1, 4).map(s=>`• ${s.item.title}`).join('\n');
-    if(related) text += `\n\n**Related:**\n${related}`;
-  }
-  const sources = top.slice(0, 3).map(s=>s.item.source).join(' · ');
-  return {text, sources};
 }
 
 /* AI events */
 $('#aiNeuralToggle').addEventListener('click', async ()=>{
-  if(aiNeural){
+  if(llmReady){
     aiNeural = false;
     localStorage.setItem(LS_AI_NEURAL, '0');
+    try{ if(llmEngine) llmEngine.unload(); }catch(e){}
+    llmEngine = null;
+    llmReady = false;
     updateAIStatus();
-    $('#aiNeuralToggle').textContent = '⚡ Enable Neural Mode';
-    addAIMessage('bot', "Neural Mode disabled. Retrieval mode active (still 100% offline).");
+    $('#aiNeuralToggle').textContent = '⚡ Enable Qwen 3 (on-device)';
+    addAIMessage('bot', "Qwen 3 disabled and unloaded from GPU memory (the download stays cached — re-enabling is instant). Retrieval mode active.");
   } else {
     aiNeural = true;
     localStorage.setItem(LS_AI_NEURAL, '1');
-    $('#aiNeuralToggle').textContent = '⏸ Disable Neural Mode';
-    await loadNeuralModel();
+    $('#aiNeuralToggle').textContent = '⏸ Disable Qwen 3';
+    await loadQwenModel();
   }
 });
+$('#aiClear').addEventListener('click', resetAIChat);
 $('#aiSend').addEventListener('click', ()=>askAI($('#aiInput').value));
 $('#aiInput').addEventListener('keydown', e=>{ if(e.key==='Enter') askAI($('#aiInput').value); });
 $('#aiSuggest').querySelectorAll('button').forEach(b=>{
@@ -2882,12 +3138,18 @@ const wake=async on=>{try{if(on){wl=await navigator.wakeLock.request('screen');t
 const cycle=()=>{const o=['auto','light','dark','oled','sepia'];S.theme=o[(o.indexOf(S.theme)+1)%o.length];apply();save();toast('Theme: '+S.theme)};
 /* palette */
 const pal=mk('pal','<input id="palq" placeholder="Surah name, tab, or 2:255 …" aria-label="Quick search" autocomplete="off"><ul id="pall" role="listbox"></ul>');
-let res=[],sel=0;const nz=s=>String(s).toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]/g,'');
+let res=[],sel=0;const nz=s=>String(s||'').toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]/g,'');
+let palHadith=null; /* v1: lazy normalized Bukhari index for instant palette search */
+function palHadithIndex(){if(palHadith)return palHadith;palHadith=[];try{if(typeof allHadiths!=='undefined')allHadiths.forEach(h=>{palHadith.push({h,hay:nz(h.english+' '+(h.narrator||''))})})}catch(e){}return palHadith}
 function build(q){const out=[];$$('nav a[data-tab]').forEach(a=>out.push({t:a.textContent.trim(),k:'Go to',f:()=>go(a.dataset.tab)}));
 out.push({t:'Toggle focus mode',k:'Action',f:()=>focus(!document.body.classList.contains('focus'))},{t:'Cycle theme',k:'Action',f:cycle},{t:'Tools, privacy and data',k:'Open',f:()=>tools.showModal()});
 const m=q.trim().match(/^(\d{1,3})\s*[:.]\s*(\d{1,3})$/);if(m&&typeof SURAHS!=='undefined'){const s=SURAHS.find(x=>x.n==m[1]);if(s)out.unshift({t:'Surah '+s.n+' '+s.en+', verse '+m[2],k:'Jump',f:()=>openS(s.n,+m[2])})}
 if(typeof SURAHS!=='undefined')SURAHS.forEach(s=>out.push({t:s.n+'. '+s.en+' ('+s.meaning+')',k:'Surah',key:s.n+s.en+s.meaning+s.ar,f:()=>openS(s.n)}));
-const n=nz(q);return(n?out.filter(i=>nz(i.key||i.t).includes(n)||sub(nz(i.key||i.t),n)):out).slice(0,30)}
+if(typeof PROPHETS!=='undefined')PROPHETS.forEach(p=>out.push({t:'Prophet '+p.name+' — '+p.title,k:'Prophet',key:p.name+p.title,f:()=>{go('stories');try{openStory(p.n)}catch(e){}}}));
+if(typeof SUNAN!=='undefined')SUNAN.forEach(c=>out.push({t:'Sunnah: '+c.cat,k:'Sunnah category',key:c.cat,f:()=>{go('sunan');setTimeout(()=>{const h=$$('.sunan-cat-title').find(x=>x.textContent.indexOf(c.cat.slice(0,18))!==-1);h&&h.click()},350)}}));
+const n=nz(q);
+if(n.length>2){const H=palHadithIndex();let c=0;for(const r of H){if(c>=8)break;if(r.hay.includes(n)){const hh=r.h;out.push({t:'Bukhari'+(hh.id!=null?' #'+hh.id:'')+' — '+(hh.english||'').slice(0,80)+'…',k:'Hadith',f:()=>{go('hadith');try{const inp=$('#hadithSearch');inp.value=(hh.english||'').slice(0,60);applyHadithFilter()}catch(e){}}});c++}}}
+return(n?out.filter(i=>nz(i.key||i.t).includes(n)||sub(nz(i.key||i.t),n)):out).slice(0,30)}
 const sub=(h,n)=>{let i=0;for(const c of h)if(c===n[i]&&++i===n.length)return true;return n.length>2&&false};
 function draw(){const l=$('#pall');l.innerHTML='';res.forEach((r,i)=>{const li=document.createElement('li');li.setAttribute('role','option');li.setAttribute('aria-selected',i===sel);li.innerHTML='<span></span><small>'+r.k+'</small>';li.firstChild.textContent=r.t;li.onclick=()=>run(i);l.appendChild(li)});const s=$('#pall [aria-selected=true]');s&&s.scrollIntoView({block:'nearest'})}
 function run(i){const r=res[i];if(r){pal.close();r.f()}}
@@ -2906,7 +3168,7 @@ const tools=mk('tools','<div class="ui-in"><button class="ui-x" aria-label="Clos
 '<h3>Tasbih</h3><div id="tsb" role="button" tabindex="0" aria-label="Tap to count"></div><div class="ui-row"><label>Goal</label>'+seg('goal',[[33,'33'],[99,'99'],[100,'100'],[1000,'1000']])+'<button class="ui-btn" id="tsR">Reset</button></div>'+
 '<h3>Offline and storage</h3><p class="ui-row" id="sto">Checking storage…</p><div class="ui-row"><button class="ui-btn" id="bS">Ask browser to keep my data</button></div>'+
 '<h3>Privacy: exactly what leaves your device</h3><table class="ui-tbl"><tr><td>Stays on device</td><td>Your progress, bookmarks, settings, prayer answers, AI questions, cached Qur’ān and hadith.</td></tr>'+
-'<tr><td>Fetched from the web</td><td>Qur’ān text (alquran.cloud), hadith data (jsDelivr/GitHub), audio (islamic.network), fonts (Google Fonts), and the optional Neural Mode model (jsDelivr). These servers can see your IP address.</td></tr>'+
+'<tr><td>Fetched from the web</td><td>Qur’ān text (alquran.cloud), hadith data (jsDelivr/GitHub), audio (islamic.network), fonts (Google Fonts), and the optional Qwen 3 0.6B model (WebLLM engine from jsDelivr, weights from Hugging Face — one-time download, then cached; generation always runs entirely on your device). These servers can see your IP address.</td></tr>'+
 '<tr><td>Prayer times</td><td>Your coordinates or city are sent to Aladhan to calculate times.</td></tr>'+
 '<tr><td>Google</td><td>Google’s sign-in script loads with the page. Signing in shares your Google profile with this app. Never sign in and nothing is synced.</td></tr>'+
 '<tr><td>Not used</td><td>No analytics, no ads, no trackers of our own.</td></tr></table>'+
