@@ -3,11 +3,89 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Islamify v1 by Alezify — the most complete offline Islamic web app: Qur'ān, Sahih al-Bukhari, 1000+ Sunan, 25 Prophets, prayer companion, and a real on-device Qwen 3 0.6B AI assistant.">
-<title>Islamify Pro v1 By Alezify — Qur'ān · Hadith · Sunan · Prophets · Qwen 3 AI</title>
+<meta name="description" content="Islamify Pro v1.4 by Alezify — the most complete Islamic web app: search inside all 6,236 Qur'ān verses, Sahih al-Bukhari, 1000+ Sunan, 25 Prophets, prayer companion, and a real on-device DeepSeek R1 1.5B AI with visible thinking.">
+<title>Islamify Pro v1.4 By Alezify — Verse Search · Qur'ān · Hadith · Sunan · Prophets · DeepSeek R1 AI</title>
 <!--
   ═══════════════════════════════════════════════════════════════
   ISLAMIFY CHANGELOG
+  v1.4 (iteration 5):
+   • NEW: On-device AI upgraded — the default model is now DeepSeek R1
+     1.5B (q4f16_1, ~1.1 GB one-time download, then cached/offline).
+     R1 STREAMS ITS 💭 THINKING: reasoning appears live in a collapsible
+     grey panel above the answer, auto-collapses when the final answer
+     starts (expand any time). The /no_think flag is gone; the system
+     prompt now invites step-by-step reasoning, and thinking models get
+     a larger token budget (1100 vs 600).
+   • NEW: Model switcher in the AI tab — 🧠 DeepSeek R1 1.5B (smartest,
+     shows thinking) · ⚖️ Qwen 2.5 1.5B Instruct (balanced) · ⚡ Qwen 3
+     0.6B (tiny, weak GPUs). Choice saved in localStorage; hot-swap
+     without reloading the page; automatic graceful fallback down the
+     chain r1 → q2.5 → q3 if a model fails or the GPU is too small.
+   • NEW: GitHub source link (github.com/omarastepforward-lab/islamify)
+     added to the footer.
+   • UI/UX: updated hero/AI copy and privacy table to reflect the new
+     models; status chip shows the active model name.
+   • KEPT: every existing tab, feature and API integration intact;
+     previous versions' behaviour unchanged.
+  v1.3 (iteration 4):
+   • NEW: Unified suggestions now on EVERY search box — the Hadith,
+     Sunan and Prophets search inputs get the same cross-app dropdown
+     the Qur'ān search already had (surahs, prophets, sunan, loaded
+     Bukhari hadith, verse refs like 2:255, the whole-Qur'ān verse
+     index and the shared recent-searches list), with ↑↓/Enter/Esc
+     keyboard navigation, Arabic-normalized highlighting, and
+     Enter-to-open the global results panel from any tab.
+   • SEARCH: match highlighting everywhere — hadith cards (all three
+     view modes) now <mark> the live query in English, Arabic and
+     narrator names; sunan rows and prophet cards highlight matched
+     words while filtering, restored automatically when cleared.
+   • SEARCH: the Ctrl+K palette highlights the matched substring in
+     each row; its placeholder now advertises full-corpus search.
+   • UI/UX: subtle suggestion-row entrance animation (disabled under
+     prefers-reduced-motion); result counts and the hadith empty
+     state are announced to screen readers (role=status + aria-live);
+     the new dropdowns carry full combobox/listbox ARIA wiring.
+   • PERF: the unified suggestion scan is skipped when the query is
+     unchanged; prophet-card filtering is debounced (80 ms).
+   • KEPT: every existing tab, feature and API integration intact;
+     previous versions' behaviour unchanged.
+  v1.2 (iteration 3):
+   • NEW: Verse-level Qur'ān search — search INSIDE all 6,236 verses
+     (Arabic + Saheeh English). The full-Qur'ān index downloads once
+     on demand (~2 MB, cached in IndexedDB, then works offline) and
+     is built in chunked steps so the UI never freezes.
+   • NEW: Unified global search results panel — pressing Enter in the
+     Qur'ān search (or the "See all results" row) opens a ranked,
+     grouped panel across verses, surahs, prophets, sunnah and
+     Bukhari hadith, with match-count chips, Arabic-normalized <mark>
+     highlighting, and one-tap jumps (verse rows open the reader at
+     the exact ayah with a golden flash). Esc/backdrop/✕ to close.
+   • NEW: Recent searches — focusing the search box with an empty
+     query shows the last 8 searches (localStorage, dedup, one-tap
+     re-run and a clear button).
+   • SEARCH: suggestion dropdown now caps per-group rows (smarter
+     ranking floor), counts totals behind the scenes, and gains a
+     "See all results for …" action row.
+   • UI/UX: golden flash animation when jumping to a verse (forces
+     Cards view if Mushaf is active), reduced-motion support for all
+     new animations, mobile-tuned panel sizing, dark/OLED styles for
+     every new component.
+   • FIX: verse reference jumps (2:255 style) now scroll + highlight
+     the target ayah (previously they only opened the surah).
+   • KEPT: every existing tab, feature and API integration intact;
+     previous versions' behaviour unchanged.
+  v1.1 (iteration 2):
+   • NEW: Unified search suggestions — typing in the Qur'ān search
+     now suggests matches across the WHOLE app (surahs, prophets,
+     sunan categories & items, loaded Bukhari hadith, verse refs
+     like 2:255), grouped and keyboard-navigable (↑↓/Enter/Esc).
+   • NEW: Search-as-you-type filters on the Sunan tab (1,000+
+     sunan, English + Arabic, auto-expands matching categories,
+     flash-jump from suggestions) and the Prophets tab.
+   • UI/UX: friendly empty states for zero-result searches, global
+     accessible :focus-visible rings, horizontally scrollable tab
+     bar on mobile, smoother card hover, faster rendering of the
+     1,000+ sunan list (content-visibility).
   v1 (initial upgrade from clean base):
    • NEW: Real generative AI — Qwen 3 0.6B runs fully on-device via
      WebLLM/WebGPU (streaming answers, one-time ~500MB cached model,
@@ -19,8 +97,14 @@
      ranked scoring for surah results with live <mark> highlighting.
    • SEARCH: Global palette (Ctrl+K / /) now also searches the 25
      Prophet stories, Sunnah categories and the full Bukhari corpus
-     (instant, cached index) in addition to surahs, verses (2:255)
-     and tabs.
+     (instant, cached index, diacritic-insensitive) in addition to
+     surahs, verses (2:255) and tabs.
+   • FIX: AI greeting now always appears (idempotent initAI — the
+     1s index warm-up timer used to silently skip it).
+   • FIX: retrieval ranking — length normalization (long stories no
+     longer outrank the exact verse/hadith), domain stopwords
+     (quran/allah/islam…), "Prophet X" title bonus, keyword count
+     saturation; verified on patience/Musa/Yusuf/anxiety queries.
    • UI/UX: tab transition animations, AI model-download progress
      bar, streaming caret, typing dots, clear-chat button, updated
      hero, status chips, refined AI tab copy and privacy table.
@@ -391,6 +475,18 @@ html[data-theme=dark] mark,html[data-theme=oled] mark{background:rgba(200,168,10
 @keyframes tabIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 #aiProgWrap{display:none;padding:.55rem 1.2rem;background:var(--card);border-top:1px solid var(--border)}
 #aiProgWrap.on{display:block}
+/* v1.4: model switcher + visible-thinking panel */
+.ai-models{display:flex;gap:.45rem;flex-wrap:wrap;padding:.55rem 1.2rem;background:var(--card);border-bottom:1px solid var(--border)}
+.ai-models button{background:var(--soft);border:1px solid var(--border);color:var(--text);font-family:inherit;font-size:.74rem;font-weight:600;padding:.32rem .7rem;border-radius:50px;cursor:pointer;transition:background .15s,border-color .15s}
+.ai-models button:hover{border-color:var(--primary)}
+.ai-models button.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.ai-models button:disabled{opacity:.55;cursor:wait}
+html[data-theme=dark] .ai-models button,html[data-theme=oled] .ai-models button{background:rgba(46,125,107,.12)}
+.ai-think{margin:.2rem 0 .6rem;font-size:.82rem}
+.ai-think summary{cursor:pointer;color:var(--text-light);font-weight:600;user-select:none}
+.ai-think summary:hover{color:var(--primary)}
+.ai-think > div{margin-top:.35rem;color:var(--text-light);font-style:italic;border-left:2px solid var(--accent);padding-left:.6rem;white-space:pre-wrap;max-height:220px;overflow:auto}
+html[data-theme=dark] .ai-think > div,html[data-theme=oled] .ai-think > div{border-left-color:#8fd0bd}
 #aiProgTrack{height:6px;background:var(--border);border-radius:6px;overflow:hidden}
 #aiProgBar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--primary));transition:width .3s;border-radius:6px}
 #aiProgLabel{font-size:.72rem;color:var(--text-light);margin-top:.35rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -406,6 +502,36 @@ html[data-theme=dark] mark,html[data-theme=oled] mark{background:rgba(200,168,10
 .grid-count{font-size:.8rem;color:var(--text-light);margin:.4rem 0 .6rem}
 .grid-count b{color:var(--primary)}
 #pall .pal-hl{color:var(--accent-light)}
+/* ===== v1.1: unified suggestions, filters, focus & mobile polish ===== */
+.search{position:relative}
+.suggest{position:absolute;top:calc(100% + 6px);left:0;right:0;min-width:280px;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 14px 38px rgba(0,0,0,.16);max-height:min(54vh,430px);overflow:auto;z-index:80;padding:.3rem;animation:tabIn .18s ease}
+.suggest[hidden]{display:none}
+.sug-h{font-size:.66rem;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--text-light);padding:.5rem .65rem .15rem}
+.sug-i{display:flex;align-items:center;gap:.55rem;padding:.45rem .65rem;border-radius:9px;cursor:pointer;animation:sugIn .13s ease both}
+@keyframes sugIn{from{opacity:0;transform:translateY(2px)}to{opacity:1;transform:none}}
+.sug-i.sel,.sug-i:hover{background:var(--soft)}
+html[data-theme=dark] .sug-i.sel,html[data-theme=oled] .sug-i.sel,html[data-theme=dark] .sug-i:hover,html[data-theme=oled] .sug-i:hover{background:rgba(46,125,107,.18)}
+.sug-i .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.87rem;font-weight:600;color:var(--text)}
+.sug-i .s{font-size:.74rem;color:var(--text-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:38%}
+.sug-i .s-ar{font-family:'Amiri',serif;font-size:1.02rem;color:var(--primary);white-space:nowrap}
+html[data-theme=dark] .sug-i .s-ar,html[data-theme=oled] .sug-i .s-ar{color:#8fd0bd}
+.sug-none{padding:.75rem .85rem;font-size:.84rem;color:var(--text-light);line-height:1.5}
+.g-empty{background:var(--card);border:1px dashed var(--border);border-radius:var(--radius);padding:1.3rem 1.4rem;text-align:center;color:var(--text-light);font-size:.92rem;line-height:1.7;margin:.4rem 0 .8rem}
+.g-empty b{color:var(--primary)}
+:is(#sunanSearch,#storySearch,#hadithSearch,#searchInput):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:focus-visible{outline:2px solid var(--primary-light);outline-offset:2px}
+@keyframes sugFlash{0%{background:rgba(200,168,107,.4)}100%{background:transparent}}
+.sunan-item.flash{animation:sugFlash 1.7s ease}
+.story-card:hover .sc-title{color:var(--primary-dark)}
+.sunan-cat{content-visibility:auto;contain-intrinsic-size:auto 420px}
+@media(max-width:760px){
+  nav ul{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:.15rem}
+  nav ul::-webkit-scrollbar{display:none}
+  nav a{white-space:nowrap}
+  #searchSuggest{left:-2.2rem;right:-2.2rem}
+  /* v1.3: dropdowns mounted on the other search boxes stay inside their toolbar */
+  .search .suggest:not(#searchSuggest){left:0;right:0}
+}
 </style>
 <style id="ui-lib">
 #ui-vc{position:fixed;left:.7rem;bottom:.7rem;background:var(--card);color:var(--text-light);border:1px solid var(--border);border-radius:99px;padding:.3rem .8rem;font-size:.75rem;z-index:890;box-shadow:0 2px 8px rgba(0,0,0,.12)}
@@ -489,9 +615,9 @@ body.blurbg{filter:blur(14px)}
 
 <main class="container">
   <section class="hero" id="hero">
-    <div class="pill">Islamify Pro v1 · Qur'ān + Bukhari + 1000+ Sunan + Prophets + Qwen 3 AI</div>
+    <div class="pill">Islamify Pro v1.4 · Qur'ān + Bukhari + 1000+ Sunan + Prophets + DeepSeek R1 AI</div>
     <h1>Read. Understand. Memorize. Live.</h1>
-    <p>All 114 surahs, the complete Sahih al-Bukhari, 250+ daily Sunan, detailed lives of the 25 Prophets, verse-by-verse audio from 10 reciters, a real generative AI — <strong>Qwen 3 0.6B running entirely on your device</strong>, grounded in this site's library with cited sources — and a gentle prayer companion. Download once — read the Qur'ān and hadith offline; audio, prayer times, and Google sign-in/sync still need internet.</p>
+    <p>All 114 surahs, the complete Sahih al-Bukhari, 250+ daily Sunan, detailed lives of the 25 Prophets, verse-by-verse audio from 10 reciters, a real generative AI — <strong>DeepSeek R1 1.5B with visible thinking, running entirely on your device</strong> — grounded in this site's library with cited sources — and a gentle prayer companion. Download once — read the Qur'ān and hadith offline; audio, prayer times, and Google sign-in/sync still need internet.</p>
   </section>
 
 
@@ -503,7 +629,7 @@ body.blurbg{filter:blur(14px)}
       <button class="ghost" id="saveHtmlBtn">💾 Save this app</button>
     </div>
     <div class="toolbar">
-      <div class="search"><i>🔎</i><input id="searchInput" placeholder="Search surah by name, meaning, or number..."></div>
+      <div class="search"><i>🔎</i><input id="searchInput" placeholder="Search everything — surah, prophet, sunnah, hadith, or 2:255…" autocomplete="off" role="combobox" aria-controls="searchSuggest" aria-expanded="false" aria-autocomplete="list"><div id="searchSuggest" class="suggest" role="listbox" aria-label="Search suggestions across the whole app" hidden></div></div>
       <select class="filt" id="filterRev">
         <option value="all">All Revelations</option>
         <option value="Makkan">Makkan</option>
@@ -550,6 +676,11 @@ body.blurbg{filter:blur(14px)}
     <div class="overview" style="margin-bottom:1rem">
       Based on <strong>“More Than 1,000 Sunan Every Day &amp; Night”</strong> by Shaykh Khaalid Al-Husaynaan. Tick each Sunnah you practice today — the bar fills as you go. Small, consistent acts are beloved to Allah. <em>The Sunnah is like the Ark of Noah: whoever embarks on it reaches salvation.</em>
     </div>
+    <div class="toolbar" style="margin-bottom:.4rem">
+      <div class="search"><i>🔎</i><input id="sunanSearch" placeholder="Search 1,000+ sunan — English or Arabic…" autocomplete="off"></div>
+    </div>
+    <div id="sunanCount" class="grid-count" style="display:none"></div>
+    <div id="sunanEmpty" class="g-empty hidden">🌿 No sunnah matched your search. Try fewer words, an Arabic spelling, or a category like <b>“prayer”</b>.</div>
     <div id="sunanContent"></div>
   </section>
 
@@ -560,6 +691,11 @@ body.blurbg{filter:blur(14px)}
       <div class="overview" style="margin-bottom:1rem">
         The lives of the 25 Prophets mentioned in the Qur'ān, drawn from the Qur'ān, authentic hadith, and classical works of Ibn Kathir. Every story is a lesson. Click any prophet to read the full account.
       </div>
+      <div class="toolbar" style="margin-bottom:.4rem">
+        <div class="search"><i>🔎</i><input id="storySearch" placeholder="Search prophets — name, title, or Arabic…" autocomplete="off"></div>
+      </div>
+      <div id="storiesCount" class="grid-count" style="display:none"></div>
+      <div id="storiesEmpty" class="g-empty hidden">🕊️ No prophet matched. Try <b>“Musa”</b>, <b>“Yusuf”</b>, or the Arabic <b>“موسى”</b>.</div>
       <div class="story-grid" id="storiesGrid"></div>
     </div>
     <div id="storyDetailView" class="hidden"></div>
@@ -567,17 +703,18 @@ body.blurbg{filter:blur(14px)}
 
   <!-- AI TAB -->
   <section id="tab-ai" class="hidden">
-    <div class="section-title"><i>🤖</i> Ask Islamify AI — now powered by Qwen 3</div>
+    <div class="section-title"><i>🤖</i> Ask Islamify AI — now with visible thinking</div>
     <div class="overview" style="margin-bottom:1rem">
-      Ask any question about Islam. Enable <strong>Qwen 3 Neural Mode</strong> once and a real language model — <strong>Qwen 3 0.6B</strong> — downloads to your browser and runs <em>entirely on your device</em>, streaming natural, complete answers (not just snippets). Every answer is grounded in this site's knowledge base — Qur'ān, Sahih al-Bukhari, Sunan, and Prophet stories — and cites its sources. Without the model, the assistant still answers instantly from the same library via smart retrieval. <em>This assistant is not a scholar and does not issue fatwas — for rulings, ask a qualified scholar.</em>
+      Ask any question about Islam. Enable <strong>Neural Mode</strong> once and a real language model — <strong>DeepSeek R1 1.5B</strong> — downloads to your browser and runs <em>entirely on your device</em>, streaming natural, complete answers (not just snippets). R1 <strong>shows its 💭 thinking</strong> step by step before answering, so you can verify how it reasoned. Switch models any time: 🧠 DeepSeek R1 1.5B (smartest) · ⚖️ Qwen 2.5 1.5B (balanced) · ⚡ Qwen 3 0.6B (tiny). Every answer is grounded in this site's knowledge base — Qur'ān, Sahih al-Bukhari, Sunan, and Prophet stories — and cites its sources. Without the model, the assistant still answers instantly from the same library via smart retrieval. <em>This assistant is not a scholar and does not issue fatwas — for rulings, ask a qualified scholar.</em>
     </div>
     <div class="ai-wrap">
       <div class="ai-header">
         <div class="ai-title"><i>✨</i><span>Islamify Assistant</span></div>
         <span class="ai-status" id="aiStatus">Retrieval · Offline</span>
         <button class="ai-clear" id="aiClear" title="Clear conversation">🧹 Clear</button>
-        <button class="ai-toggle" id="aiNeuralToggle">⚡ Enable Qwen 3 (on-device)</button>
+        <button class="ai-toggle" id="aiNeuralToggle">⚡ Enable Neural AI (on-device)</button>
       </div>
+      <div class="ai-models" id="aiModels" role="group" aria-label="Choose the on-device model"></div>
       <div id="aiProgWrap"><div id="aiProgTrack"><div id="aiProgBar"></div></div><div id="aiProgLabel">Preparing…</div></div>
       <div class="ai-messages" id="aiMessages"></div>
       <div class="ai-suggest" id="aiSuggest">
@@ -660,7 +797,7 @@ body.blurbg{filter:blur(14px)}
 </main>
 
 <footer>
-  <div class="copyright">Copyright Alezify 2026 by Omar Sanad</div>
+  <div class="copyright">Copyright Alezify 2026 by Omar Sanad · <a href="https://github.com/omarastepforward-lab/islamify" target="_blank" rel="noopener" style="color:var(--primary);font-weight:600">📦 Source code on GitHub</a></div>
   <div class="copy-sub">Islamify · Qur'ān + Sahih al-Bukhari + 250+ Sunan + 25 Prophets + Offline AI</div>
   <p>Audio from <a href="https://islamic.network" target="_blank" rel="noopener">islamic.network</a> · Qur'ān text via <a href="https://alquran.cloud" target="_blank" rel="noopener">alquran.cloud</a> · Hadith from <a href="https://github.com/AhmedBaset/hadith-json" target="_blank" rel="noopener">hadith-json</a> · Prayer times via <a href="https://aladhan.com" target="_blank" rel="noopener">Aladhan</a>.</p>
   <p style="margin-top:.4rem;font-size:.75rem">All content cached locally after first load. Sign in with Google to sync memorization across devices.</p>
@@ -1514,10 +1651,18 @@ function renderSurahGrid(){
   if(rawQ) scored.sort((a,b)=>b.score - a.score || a.s.n - b.s.n);
   const cnt = document.createElement('div');
   cnt.className = 'grid-count';
+  cnt.setAttribute('role','status'); /* v1.3: result counts are announced to screen readers */
+  cnt.setAttribute('aria-live','polite');
   cnt.innerHTML = rawQ
     ? `<b>${scored.length}</b> surah${scored.length===1?'':'s'} match “${escapeHtml(rawQ)}”`
     : `Showing all <b>${SURAHS.length}</b> surahs`;
   grid.appendChild(cnt);
+  if(rawQ && !scored.length){
+    const em = document.createElement('div');
+    em.className = 'g-empty';
+    em.innerHTML = '🔍 No surah matched <b>“'+escapeHtml(rawQ)+'”</b>.<br>Try an Arabic spelling (e.g. <b>الفاتحة</b>), a surah number, or open <b>Ask AI</b> and ask in your own words.';
+    grid.appendChild(em);
+  }
   scored.forEach(({s})=>{
     const p = getSurahProgress(s.n);
     const pct = p.memorized.length ? Math.round(p.memorized.length/s.verses*100) : 0;
@@ -1544,8 +1689,306 @@ function renderSurahGrid(){
     grid.appendChild(card);
   });
 }
-$('#searchInput').addEventListener('input', renderSurahGrid);
+/* ============ UNIFIED GLOBAL SEARCH SUGGESTIONS (v1.1) ============ */
+function goTab(t){
+  const a = document.querySelector('nav a[data-tab="'+t+'"]');
+  if(a) a.click();
+}
+/* flash-scroll to a specific sunnah item (used by suggestions) */
+function flashSunanItem(id){
+  try{
+    const cb = document.querySelector('input[data-sid="'+CSS.escape(String(id))+'"]');
+    if(!cb) return;
+    const item = cb.closest('.sunan-item');
+    if(!item) return;
+    const cat = item.closest('.sunan-cat');
+    if(cat){
+      const body = cat.querySelector('.sunan-items');
+      if(body && body.classList.contains('hidden')){
+        body.classList.remove('hidden');
+        const ch = cat.querySelector('.sunan-chevron');
+        if(ch) ch.textContent = '▾';
+      }
+    }
+    item.scrollIntoView({behavior:'smooth', block:'center'});
+    item.classList.add('flash');
+    setTimeout(()=>item.classList.remove('flash'), 1800);
+  }catch(e){}
+}
+/* normalized hadith haystack, built lazily once the corpus is loaded */
+let _hadHay = null;
+function hadithHay(){
+  if(_hadHay) return _hadHay;
+  _hadHay = [];
+  try{
+    if(typeof allHadiths !== 'undefined' && allHadiths && allHadiths.length){
+      allHadiths.forEach(h=>_hadHay.push({h, hay:normAr((h.english||'')+' '+(h.narrator||''))}));
+    }
+  }catch(e){}
+  return _hadHay;
+}
+/* Collect unified suggestions across every section. Returns [{g,score,label,sub,act}] with a .counts totals map.
+   opts (optional): {verseLimit, hadLimit, sunLimit, sunCatLimit} — the global results panel passes bigger caps. */
+function collectSuggest(raw, opts){
+  raw = (raw||'').trim();
+  if(!raw) return [];
+  const nq = normAr(raw);
+  if(!nq) return [];
+  const groups = {verse:[], surah:[], prophet:[], sunnah:[], hadith:[]};
+
+  /* verse reference like 2:255 */
+  const ref = raw.match(/^(\d{1,3})\s*[:\.]\s*(\d{1,3})$/);
+  if(ref && +ref[1] >= 1 && +ref[1] <= 114){
+    groups.surah.push({g:'surah', score:95, label:'Surah '+ref[1]+' — open at verse '+ref[2], sub:'Quick jump', act:()=>openSurah(+ref[1])});
+  }
+
+  (SURAHS||[]).forEach(s=>{
+    const sc = surahScore(s, nq, raw.toLowerCase());
+    if(sc > 0) groups.surah.push({g:'surah', score:sc, label:s.n+'. '+s.en+' — '+s.meaning, sub:s.ar, act:()=>openSurah(s.n)});
+  });
+
+  (PROPHETS||[]).forEach(p=>{
+    const nh = p._nh || (p._nh = normAr((p.name||'')+' \u0001 '+(p.title||'')+' \u0001 '+(p.ar||'')+' \u0001 '+(p.era||'')+' \u0001 '+(p.mention||'')));
+    let sc = 0;
+    if(normAr(p.name||'').indexOf(nq) === 0) sc = 85;
+    else if(normAr(p.name||'').indexOf(nq) !== -1) sc = 65;
+    else if(normAr(p.ar||'') && normAr(p.ar||'').indexOf(nq) !== -1) sc = 60;
+    else if(normAr(p.title||'').indexOf(nq) !== -1) sc = 55;
+    else if(nh.indexOf(nq) !== -1) sc = 30;
+    if(sc) groups.prophet.push({g:'prophet', score:sc, label:'Prophet '+p.name+' — '+p.title, sub:p.ar||'', act:()=>{ goTab('stories'); setTimeout(()=>openStory(p.n), 80); }});
+  });
+
+  const sunCatLim = (opts && opts.sunCatLimit != null) ? opts.sunCatLimit : 3;
+  const sunItLim  = (opts && opts.sunLimit     != null) ? opts.sunLimit     : 8;
+  let sunCatTot = 0, sunItTot = 0;
+  (SUNAN||[]).forEach(c=>{
+    const cat = normAr(c.cat||'');
+    if(cat.indexOf(nq) !== -1){
+      sunCatTot++;
+      if(sunCatTot <= sunCatLim){
+      groups.sunnah.push({g:'sunnah', score:72, label:'🌿 '+c.cat, sub:c.items.length+' sunan', act:()=>{
+        goTab('sunan');
+        setTimeout(()=>{
+          const t = $$('.sunan-cat-title').find(x=>normAr(x.textContent).indexOf(cat.slice(0,16)) !== -1);
+          if(t){
+            const catEl = t.closest('.sunan-cat');
+            const body = catEl.querySelector('.sunan-items');
+            if(body) body.classList.remove('hidden');
+            const ch = catEl.querySelector('.sunan-chevron');
+            if(ch) ch.textContent = '▾';
+            catEl.scrollIntoView({behavior:'smooth', block:'start'});
+          }
+        }, 120);
+      }});
+      }
+    }
+    c.items.forEach(it=>{
+      const nh = it._nh || (it._nh = normAr((it.t||'')+' '+(it.s||'')));
+      if(nh.indexOf(nq) !== -1){
+        sunItTot++;
+        if(sunItTot <= sunItLim){
+          groups.sunnah.push({g:'sunnah', score:50, label:it.t, sub:c.cat, act:()=>{ goTab('sunan'); setTimeout(()=>flashSunanItem(it.id), 140); }});
+        }
+      }
+    });
+  });
+
+  const hadLim = (opts && opts.hadLimit != null) ? opts.hadLimit : 3;
+  let hadTot = 0;
+  const hh = hadithHay();
+  if(hh.length){
+    for(const rec of hh){
+      if(rec.hay.indexOf(nq) !== -1){
+        hadTot++;
+        if(groups.hadith.length < hadLim){
+          groups.hadith.push({g:'hadith', score:58, label:(rec.h.english||'').replace(/\s+/g,' ').slice(0,90), sub:(rec.h.narrator||'')+' · Bukhari', act:()=>{
+            goTab('hadith');
+            setTimeout(()=>{ const el = $('#hadithSearch'); if(el){ el.value = raw; el.dispatchEvent(new Event('input',{bubbles:true})); } }, 160);
+          }});
+        }
+      }
+    }
+  } else {
+    groups.hadith.push({g:'hadith', score:8, hint:true, label:'📚 Open the Hadith tab to load Sahih al-Bukhari (7,000+ hadith search)', sub:'', act:()=>goTab('hadith')});
+  }
+
+  /* v1.2: verse-level search hook (whole-Qur'ān index, built on demand) */
+  let verseTot = 0;
+  if(window.__v12 && window.__v12.verseSuggest){
+    try{ verseTot = window.__v12.verseSuggest(nq, raw, groups, opts) || 0; }catch(e){ console.warn('verse suggest failed', e); }
+  }
+
+  const out = [];
+  ['verse','surah','prophet','sunnah','hadith'].forEach(g=>{
+    (groups[g]||[]).sort((a,b)=>b.score - a.score);
+    out.push(...(groups[g]||[]));
+  });
+  out.counts = { verse:verseTot, surah:groups.surah.length, prophet:groups.prophet.length, sunnah:sunCatTot + sunItTot, hadith:hadTot||0 };
+  return out;
+}
+
+let _sugItems = [], _sugSel = -1, _sugT = null, _sugLastRaw = null;
+function sugPaint(){
+  const box = $('#searchSuggest');
+  box.querySelectorAll('.sug-i').forEach((el,i)=>{
+    el.classList.toggle('sel', i === _sugSel);
+    el.setAttribute('aria-selected', i === _sugSel ? 'true' : 'false');
+    if(i === _sugSel && el.scrollIntoView) el.scrollIntoView({block:'nearest'});
+  });
+}
+function sugPick(i){
+  const it = _sugItems[i];
+  const box = $('#searchSuggest'), inp = $('#searchInput');
+  if(box){ box.hidden = true; }
+  if(inp){ inp.setAttribute('aria-expanded','false'); inp.blur(); }
+  if(inp && window.__v12 && window.__v12.addRecent && inp.value.trim()){ try{ window.__v12.addRecent(inp.value.trim()); }catch(e){} }
+  if(it && it.act){ try{ it.act(); }catch(e){ console.warn('suggest action failed', e); } }
+}
+function renderSuggest(){
+  const box = $('#searchSuggest'), inp = $('#searchInput');
+  if(!box || !inp) return;
+  const raw = inp.value;
+  if(!raw.trim()){
+    _sugLastRaw = null;
+    /* v1.2: show recent searches when the query is empty (delegated to the v1.2 module) */
+    if(window.__v12 && window.__v12.recent){
+      const ritems = window.__v12.recent(box, inp);
+      if(ritems && ritems.length){ _sugItems = ritems; _sugSel = -1; return; }
+    }
+    box.hidden = true; box.innerHTML = '';
+    inp.setAttribute('aria-expanded','false');
+    return;
+  }
+  /* v1.3: skip the whole cross-corpus scan when the query hasn't changed */
+  if(raw === _sugLastRaw && !box.hidden && box.children.length) return;
+  _sugLastRaw = raw;
+  const items = collectSuggest(raw);
+  _sugItems = items; _sugSel = -1;
+  if(!items.length){
+    box.innerHTML = '<div class="sug-none">No matches in surahs, prophets, or sunan. Try an Arabic spelling — or ask <b>Ask AI</b> in your own words.</div>';
+  } else {
+    const LABELS = {surah:'📖 Surah', prophet:'🕊️ Prophet', sunnah:'🌿 Sunnah', hadith:'📚 Hadith'};
+    let html = '', lastG = null;
+    items.forEach((it,i)=>{
+      if(it.g !== lastG){ html += `<div class="sug-h">${LABELS[it.g]}</div>`; lastG = it.g; }
+      html += `<div class="sug-i" role="option" data-idx="${i}" aria-selected="false"><span class="t">${escapeHtml(it.label)}</span>${it.hint?'':(it.sub ? `<span class="${/[\u0600-\u06FF]/.test(it.sub)?'s-ar':'s'}">${escapeHtml(it.sub)}</span>`:'')}</div>`;
+    });
+    if(window.__v12 && window.__v12.moreRow){
+      const mr = window.__v12.moreRow(raw, _sugItems.length);
+      if(mr){ html += mr.html; _sugItems.push(mr.item); }
+    }
+    box.innerHTML = html;
+  }
+  box.hidden = false;
+  inp.setAttribute('aria-expanded','true');
+}
+function renderSuggestDebounced(){
+  clearTimeout(_sugT);
+  _sugT = setTimeout(renderSuggest, 70);
+}
+$('#searchInput').addEventListener('input', ()=>{ renderSurahGrid(); renderSuggestDebounced(); });
 $('#filterRev').addEventListener('change', renderSurahGrid);
+$('#searchInput').addEventListener('keydown', e=>{
+  const box = $('#searchSuggest');
+  if(!box || box.hidden || !_sugItems.length) return;
+  if(e.key === 'ArrowDown'){ e.preventDefault(); _sugSel = Math.min(_sugSel+1, _sugItems.length-1); sugPaint(); }
+  else if(e.key === 'ArrowUp'){ e.preventDefault(); _sugSel = Math.max(_sugSel-1, 0); sugPaint(); }
+  else if(e.key === 'Enter'){
+    if(_sugSel >= 0){ e.preventDefault(); sugPick(_sugSel); }
+    else {
+      const gq = $('#searchInput').value.trim();
+      if(gq && window.__v12 && window.__v12.openGlobal){
+        e.preventDefault();
+        box.hidden = true; $('#searchInput').setAttribute('aria-expanded','false');
+        window.__v12.openGlobal(gq);
+      }
+    }
+  }
+  else if(e.key === 'Escape'){ box.hidden = true; $('#searchInput').setAttribute('aria-expanded','false'); }
+});
+$('#searchSuggest').addEventListener('mousedown', e=>{
+  const el = e.target.closest('.sug-i');
+  if(el){ e.preventDefault(); sugPick(parseInt(el.dataset.idx)); }
+});
+$('#searchInput').addEventListener('blur', ()=>{
+  setTimeout(()=>{ const b = $('#searchSuggest'); if(b && !b.hidden){ b.hidden = true; $('#searchInput').setAttribute('aria-expanded','false'); } }, 200);
+});
+
+/* ============ SUNAN & STORIES SEARCH FILTERS (v1.1) ============ */
+/* v1.3: highlight helper — swaps an element's markup for a <mark>-highlighted
+   copy while a query is active, restores the original markup when cleared.
+   The first-seen markup is kept in a WeakMap, so re-renders (fresh elements)
+   are always captured in their original form. */
+const _hlMap = new WeakMap();
+function hlInto(el, q){
+  if(!el) return;
+  if(!_hlMap.has(el)) _hlMap.set(el, el.innerHTML);
+  const orig = _hlMap.get(el);
+  try{ el.innerHTML = q ? hiMark(el.textContent, q) : orig; }catch(e){ el.innerHTML = orig; }
+}
+let _sunanT = null;
+function filterSunan(){
+  const raw = ($('#sunanSearch') && $('#sunanSearch').value || '').trim();
+  const nq = normAr(raw);
+  const wrap = $('#sunanContent');
+  const cnt = $('#sunanCount'), emp = $('#sunanEmpty');
+  if(!wrap || !cnt || !emp) return;
+  let shown = 0;
+  wrap.querySelectorAll('.sunan-cat').forEach(cat=>{
+    const titleEl = cat.querySelector('.sunan-cat-title');
+    const catHit = !nq || (titleEl && normAr(titleEl.textContent).indexOf(nq) !== -1);
+    if(titleEl) hlInto(titleEl, raw && catHit ? raw : '');
+    let catShown = 0;
+    cat.querySelectorAll('.sunan-item').forEach(item=>{
+      const hit = catHit || normAr(item.textContent).indexOf(nq) !== -1;
+      item.classList.toggle('hidden', !hit);
+      if(hit){
+        catShown++;
+        /* v1.3: highlight the matched words inside visible sunnah rows */
+        const tx = item.querySelector('.sunan-text'), src = item.querySelector('.sunan-src');
+        const q2 = (hit && !catHit) ? raw : '';
+        hlInto(tx, q2); hlInto(src, q2);
+      }
+    });
+    cat.classList.toggle('hidden', !!nq && catShown === 0);
+    shown += catShown;
+    if(nq && catShown){
+      const body = cat.querySelector('.sunan-items');
+      if(body && body.classList.contains('hidden')){
+        body.classList.remove('hidden');
+        const ch = cat.querySelector('.sunan-chevron');
+        if(ch) ch.textContent = '▾';
+      }
+    }
+  });
+  cnt.style.display = nq ? 'block' : 'none';
+  if(nq) cnt.innerHTML = `<b>${shown}</b> sunnah${shown===1?'':'s'} match “${escapeHtml(raw)}”`;
+  emp.classList.toggle('hidden', !(nq && !shown));
+}
+function filterStories(){
+  const raw = ($('#storySearch') && $('#storySearch').value || '').trim();
+  const nq = normAr(raw);
+  const grid = $('#storiesGrid');
+  const cnt = $('#storiesCount'), emp = $('#storiesEmpty');
+  if(!grid || !cnt || !emp) return;
+  let shown = 0;
+  grid.querySelectorAll('.story-card').forEach(card=>{
+    const hit = !nq || normAr(card.textContent).indexOf(nq) !== -1;
+    card.classList.toggle('hidden', !hit);
+    if(hit){
+      shown++;
+      /* v1.3: highlight matched words on the visible prophet cards */
+      ['.sc-ar','.sc-title','.sc-hint'].forEach(sel=>hlInto(card.querySelector(sel), raw));
+    }
+  });
+  cnt.style.display = nq ? 'block' : 'none';
+  if(nq) cnt.innerHTML = `<b>${shown}</b> prophet${shown===1?'':'s'} match “${escapeHtml(raw)}”`;
+  emp.classList.toggle('hidden', !(nq && !shown));
+}
+$('#sunanSearch').addEventListener('input', ()=>{ clearTimeout(_sunanT); _sunanT = setTimeout(filterSunan, 100); });
+/* v1.3: tiny debounce so fast typing never queues overlapping repaints */
+let _storiesT = null;
+$('#storySearch').addEventListener('input', ()=>{ clearTimeout(_storiesT); _storiesT = setTimeout(filterStories, 80); });
 
 /* ============ DOWNLOAD ALL FOR OFFLINE ============ */
 $('#downloadAllBtn').addEventListener('click', async ()=>{
@@ -1593,7 +2036,28 @@ function closeModal(){
 $('#mClose').addEventListener('click', closeModal);
 $('#modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
 
-async function openSurah(n){
+/* v1.2: scroll to a specific verse inside the open reader and flash it */
+function jumpToAyah(v){
+  const c = $('#ayahContainer');
+  if(!c || !v) return;
+  if(typeof quranView !== 'undefined' && quranView !== 'cards'){
+    quranView = 'cards';
+    const body = $('#mBody');
+    if(body) body.querySelectorAll('[data-qv]').forEach(x=>x.classList.toggle('on', x.dataset.qv==='cards'));
+    if(typeof renderAyahs === 'function') renderAyahs();
+  }
+  let tries = 0;
+  const t = setInterval(()=>{
+    const el = c.querySelector('.ayah[data-i="'+v+'"]');
+    if(el){
+      clearInterval(t);
+      el.scrollIntoView({behavior:'smooth', block:'center'});
+      el.classList.add('flash');
+      setTimeout(()=>el.classList.remove('flash'), 2400);
+    } else if(++tries > 16){ clearInterval(t); }
+  }, 200);
+}
+async function openSurah(n, jumpV){
   const s = SURAHS.find(x=>x.n===n);
   if(!s) return;
   currentSurah = s;
@@ -1669,6 +2133,7 @@ async function openSurah(n){
   $('#stopRepBtn').addEventListener('click', ()=>{ if(window._repTimer){clearInterval(window._repTimer); window._repTimer=null;} $('#repeatBox').classList.add('hidden'); });
 
   await loadSurahVerses(s.n);
+  if(jumpV) jumpToAyah(jumpV);
 }
 
 async function loadSurahVerses(n){
@@ -1956,6 +2421,8 @@ function renderHadithPage(){
   const pag = $('#hadithPagination');
   const noRes = $('#hadithNoResults');
   const total = filteredHadiths.length;
+  /* v1.3: highlight the live search query inside the rendered hadith cards */
+  const hlq = ($('#hadithSearch').value || '').trim();
 
   if(total === 0){
     container.classList.add('hidden');
@@ -1978,10 +2445,10 @@ function renderHadithPage(){
           <div class="hm-head">
             <span class="badge">Hadith #${h.id}</span>
             <span class="badge madani">${escapeHtml(String(chapLabel))}</span>
-            ${h.narrator ? `<span class="narrator">${escapeHtml(h.narrator)}</span>` : ''}
+            ${h.narrator ? `<span class="narrator">${hiMark(h.narrator, hlq)}</span>` : ''}
           </div>
-          ${h.arabic ? `<div class="hm-ar">${escapeHtml(h.arabic)}</div>` : ''}
-          <div class="hm-en">${escapeHtml(h.english)}</div>
+          ${h.arabic ? `<div class="hm-ar">${hiMark(h.arabic, hlq)}</div>` : ''}
+          <div class="hm-en">${hiMark(h.english, hlq)}</div>
           <div class="hm-id">Sahih al-Bukhari ${h.id}</div>
         </div>
       `;
@@ -1995,10 +2462,10 @@ function renderHadithPage(){
           <div class="hadith-meta">
             <span class="badge">Hadith #${h.id}</span>
             <span class="badge madani">${escapeHtml(String(chapLabel))}</span>
-            ${h.narrator ? `<span class="narrator">${escapeHtml(h.narrator)}</span>` : ''}
+            ${h.narrator ? `<span class="narrator">${hiMark(h.narrator, hlq)}</span>` : ''}
           </div>
-          ${h.arabic ? `<div class="hadith-ar">${escapeHtml(h.arabic)}</div>` : ''}
-          <div class="hadith-en ${hadithHideEn?'blurred':''}" data-hid="${h.id}">${escapeHtml(h.english)}</div>
+          ${h.arabic ? `<div class="hadith-ar">${hiMark(h.arabic, hlq)}</div>` : ''}
+          <div class="hadith-en ${hadithHideEn?'blurred':''}" data-hid="${h.id}">${hiMark(h.english, hlq)}</div>
           <div class="hadith-tools">
             <button class="ay-btn" data-reveal="${h.id}">${hadithHideEn?'👁 Reveal':'👁 Hide'}</button>
             <button class="ay-btn ${isMem?'on':''}" data-hmem="${h.id}">${isMem?'✓ Memorized':'Mark memorized'}</button>
@@ -2033,10 +2500,10 @@ function renderHadithPage(){
           <div class="hadith-meta">
             <span class="badge">Hadith #${h.id}</span>
             <span class="badge madani">${escapeHtml(String(chapLabel))}</span>
-            ${h.narrator ? `<span class="narrator">${escapeHtml(h.narrator)}</span>` : ''}
+            ${h.narrator ? `<span class="narrator">${hiMark(h.narrator, hlq)}</span>` : ''}
           </div>
-          ${h.arabic ? `<div class="hadith-ar">${escapeHtml(h.arabic)}</div>` : ''}
-          <div class="hadith-en">${escapeHtml(h.english)}</div>
+          ${h.arabic ? `<div class="hadith-ar">${hiMark(h.arabic, hlq)}</div>` : ''}
+          <div class="hadith-en">${hiMark(h.english, hlq)}</div>
           <div class="hadith-id">Sahih al-Bukhari ${h.id}</div>
         </div>
       `;
@@ -2151,6 +2618,7 @@ function renderSunan(){
       h.querySelector('.sunan-chevron').textContent = body.classList.contains('hidden')?'▸':'▾';
     });
   });
+  filterSunan(); /* v1.1: re-apply the search filter after re-render */
 }
 function updateSunanProgress(){
   let total=0,done=0;
@@ -2185,6 +2653,7 @@ function renderStoriesList(){
   grid.querySelectorAll('.story-card').forEach(c=>{
     c.addEventListener('click', ()=>openStory(parseInt(c.dataset.pn)));
   });
+  filterStories(); /* v1.1: re-apply the search filter after re-render */
 }
 function openStory(n){
   const p = PROPHETS.find(x=>x.n===n);
@@ -2265,21 +2734,26 @@ function buildAIIndex(){
 }
 
 function initAI(){
-  if(aiIndex.length) return;
-  buildAIIndex();
-  $('#aiMessages').innerHTML = '';
-  addAIMessage('bot', "Assalamu alaikum! 👋 I'm your Islamify AI, powered by **Qwen 3 0.6B** running entirely on your device. I answer from the Qur'ān, Sahih al-Bukhari, the daily Sunan and the lives of the Prophets — with sources.\n\nRight now I'm in fast **Retrieval mode** (instant, fully offline). Tap ⚡ *Enable Qwen 3* above once for full generative answers — the model downloads once, then works offline forever.\n\nTry: *\"What does the Quran say about patience?\"* or *\"Tell me about Prophet Musa.\"*");
+  /* v1 fix: idempotent init — the 1s warm-up timer pre-builds the index, so a
+     simple early-return used to skip the greeting forever. Now the greeting is
+     decoupled and shows exactly once, and state restores on every tab visit. */
+  if(!aiIndex.length) buildAIIndex();
+  if(!$('#aiMessages').children.length){
+    addAIMessage('bot', "Assalamu alaikum! 👋 I'm your Islamify AI, powered by **DeepSeek R1 1.5B** running entirely on your device — I stream my 💭 thinking before each answer so you can watch the reasoning, then reply with sources from the Qur'ān, Sahih al-Bukhari, the daily Sunan and the lives of the Prophets.\n\nRight now I'm in fast **Retrieval mode** (instant, fully offline). Tap ⚡ *Enable Neural AI* above once for full generative answers — the model downloads once, then works offline forever. You can also switch models any time: 🧠 R1 1.5B · ⚖️ Qwen 2.5 1.5B · ⚡ Qwen 3 0.6B.\n\nTry: *\"What does the Quran say about patience?\"* or *\"Tell me about Prophet Musa.\"*");
+  }
   aiNeural = localStorage.getItem(LS_AI_NEURAL) === '1';
   updateAIStatus();
+  renderAIModels();
   if(aiNeural && !llmReady && !llmLoading) loadQwenModel();
 }
 
 function updateAIStatus(){
   const s = $('#aiStatus');
   if(!s) return;
-  if(llmReady) s.textContent = 'Qwen 3 0.6B · Ready · On-device';
-  else if(llmLoading) s.textContent = 'Qwen 3 · Downloading…';
-  else if(aiNeural) s.textContent = 'Qwen 3 · Waiting';
+  const m = aiSelectedModel();
+  if(llmReady) s.textContent = m.short + ' · Ready · On-device';
+  else if(llmLoading) s.textContent = m.short + ' · Downloading…';
+  else if(aiNeural) s.textContent = m.short + ' · Waiting';
   else s.textContent = 'Retrieval · Offline';
 }
 
@@ -2292,12 +2766,31 @@ function aiRenderText(t){
   return escapeHtml(t).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
 }
 
-/* Streaming-safe removal of Qwen3 <think> blocks */
+/* Streaming-safe removal of Qwen3 <think> blocks (still used as fallback) */
 function filterThink(s){
   s = s.replace(/<think>[\s\S]*?<\/think>/g,'').replace(/<\/?think>/g,'');
   const open = s.lastIndexOf('<think>');
   if(open !== -1) s = s.slice(0, open);
   return s.trim();
+}
+/* v1.4: SPLIT (not strip) the reasoning so R1's thinking can be SHOWN —
+   returns {think, answer, open} where open=true while the model is still
+   inside its <think>… block (streaming-safe, called on every chunk). */
+function splitThink(s){
+  let think = '', answer = s, open = false;
+  const openIdx = s.indexOf('<think>');
+  const closeIdx = s.indexOf('</think>');
+  if(openIdx !== -1){
+    if(closeIdx !== -1 && closeIdx > openIdx){
+      think = s.slice(openIdx + 7, closeIdx);
+      answer = s.slice(closeIdx + 8);
+    } else {
+      think = s.slice(openIdx + 7);
+      answer = '';
+      open = true;
+    }
+  }
+  return { think: think.trim(), answer: answer.trim(), open };
 }
 
 function resetAIChat(){
@@ -2309,7 +2802,8 @@ function resetAIChat(){
 function addAIMessage(who, text, source){
   const div = document.createElement('div');
   div.className = 'ai-msg ' + who;
-  let html = escapeHtml(text);
+  /* v1.4: render **bold** markers instead of showing them literally */
+  let html = escapeHtml(text).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
   if(source) html += `<span class="src">📚 Source: ${escapeHtml(source)}</span>`;
   div.innerHTML = html;
   $('#aiMessages').appendChild(div);
@@ -2338,11 +2832,12 @@ async function askAI(question){
       const messages = [{role:'system', content: buildSystemPrompt(ctxItems)}]
         .concat(aiHistory.slice(-6))
         .concat([{role:'user', content: question}]);
+      const selModel = aiSelectedModel();
       const stream = await llmEngine.chat.completions.create({
         messages: messages,
         stream: true,
         temperature: 0.7,
-        max_tokens: 600
+        max_tokens: selModel.think ? 1100 : 600   /* v1.4: thinking models need room for the reasoning */
       });
       let raw = '';
       for await (const chunk of stream){
@@ -2350,12 +2845,26 @@ async function askAI(question){
         const delta = ch0 && ch0.delta ? (ch0.delta.content || '') : '';
         if(!delta) continue;
         raw += delta;
-        const shown = filterThink(raw);
-        if(shown) bubble.innerHTML = aiRenderText(shown) + '<span class="ai-caret"></span>';
+        /* v1.4: show the model's thinking live in a collapsible panel */
+        const parts = splitThink(raw);
+        let html = '';
+        if(parts.think){
+          html += '<details class="ai-think"' + (parts.open ? ' open' : '') + '><summary>'
+                + (parts.open ? '💭 Thinking…' : '💭 Thought process') + '</summary><div>'
+                + aiRenderText(parts.think) + '</div></details>';
+        }
+        if(parts.answer) html += aiRenderText(parts.answer) + '<span class="ai-caret"></span>';
+        bubble.innerHTML = html || '<span class="dots"><i></i><i></i><i></i></span>';
         scroller.scrollTop = scroller.scrollHeight;
       }
-      const answer = filterThink(raw) || 'I could not generate an answer — please try again.';
-      let html = aiRenderText(answer);
+      const parts = splitThink(raw);
+      const answer = parts.answer || 'I could not generate an answer — please try again.';
+      let html = '';
+      if(parts.think){
+        html += '<details class="ai-think"><summary>💭 Thought process</summary><div>'
+              + aiRenderText(parts.think) + '</div></details>';
+      }
+      html += aiRenderText(answer);
       const sources = ctxItems.slice(0,3).map(c=>c.item.source).join(' · ');
       if(sources) html += `<span class="src">📚 Grounded in: ${escapeHtml(sources)}</span>`;
       bubble.innerHTML = html;
@@ -2396,7 +2905,7 @@ async function askAI(question){
 }
 
 /* Simple keyword-based retrieval — upgraded in v1 with stemming + synonyms */
-const STOPWORDS = new Set('what is are the a an of and or in on to for about from with how why when where who whom which do does did be been was were will would should can could may might this that these those i you he she it we they my your his her its our their me him them as at by if not no yes so but also than then there here say says said tell telling tell me mention verses chapter chapters really would could prophet messenger story stories'.split(' '));
+const STOPWORDS = new Set('what is are the a an of and or in on to for about from with how why when where who whom which do does did be been was were will would should can could may might this that these those i you he she it we they my your his her its our their me him them as at by if not no yes so but also than then there here say says said tell telling tell me mention verses chapter chapters really would could prophet messenger story stories quran allah islam muslim muslims sunnah hadith hadiths book'.split(' '));
 
 /* Concept synonyms so "patience" also finds "patient/sabr", "prayer" finds "salah", etc. */
 const Q_SYNONYMS = {
@@ -2437,15 +2946,17 @@ function expandToken(t){
   return out;
 }
 
-function tokenize(text){
-  return normAr(text).replace(/[^\w\u0600-\u06FF]+/g,' ').split(/\s+/).filter(w=>w && w.length>1 && !STOPWORDS.has(w));
+function tokenize(text, keepAll){
+  const raw = normAr(text).replace(/[^\w\u0600-\u06FF]+/g,' ').split(/\s+/);
+  return raw.filter(w=>w && w.length>1 && (keepAll || !STOPWORDS.has(w)));
 }
 
 /* Shared ranked retrieval — used by both the fast answers and Qwen RAG context.
    v1: TF-IDF-lite weighting — rare, meaningful terms count more than words
    that appear everywhere (like "Qur'ān" inside a Qur'ān app). */
 function retrievalItems(question, n){
-  const qTokens = tokenize(question);
+  let qTokens = tokenize(question);
+  if(!qTokens.length) qTokens = tokenize(question, true); /* query was all domain words — retry raw */
   if(!qTokens.length || !aiIndex.length) return [];
   const variants = [];
   qTokens.forEach(t=>expandToken(t).forEach(v=>{ if(v && v.length>=3 && variants.indexOf(v)===-1) variants.push(v); }));
@@ -2469,12 +2980,19 @@ function retrievalItems(question, n){
     for(const v of variants){
       if(search.indexOf(v)===-1) continue;
       const w = weight(v);
-      score += w * (tTitle.indexOf(v)!==-1 ? 3 : 1);
+      score += w * (tTitle.indexOf(v)!==-1 ? 4 : 1);
+      /* the prophet the user named wins over prophets who merely mention him */
+      if(v.length>=4 && tTitle.startsWith('prophet ' + v)) score += w * 2;
       let idx = 0, count = 0;
-      while((idx = search.indexOf(v, idx)) !== -1 && count < 5){ count++; idx += v.length; }
+      while((idx = search.indexOf(v, idx)) !== -1 && count < 2){ count++; idx += v.length; }
       score += count * 0.5 * w;
     }
-    if(score > 0) scored.push({item, score});
+    if(score > 0){
+      /* v1: length normalization — long prophet stories must not outrank the
+         exact verse or hadith just because a keyword repeats more often */
+      score = score / Math.sqrt(1 + search.length / 600);
+      scored.push({item, score});
+    }
   }
   if(!scored.length) return [];
   scored.sort((a,b)=>b.score - a.score);
@@ -2515,10 +3033,22 @@ function retrievalAnswer(question){
 }
 
 /* ============================================================
-   QWEN 3 0.6B — real generative AI, 100% on-device (WebLLM/WebGPU)
-   One-time ~500MB download, cached by the browser, then offline.
+   ON-DEVICE AI — model switcher (v1.4)
+   Primary: DeepSeek-R1-Distill-Qwen-1.5B (shows its 💭 thinking)
+   Balanced: Qwen 2.5 1.5B Instruct · Tiny: Qwen 3 0.6B
+   One-time download (R1 ≈ 1.1 GB), cached by the browser, then offline.
    ============================================================ */
-const QWEN_MODEL_ID = 'Qwen3-0.6B-q4f16_1-MLC';
+const AI_MODELS = [
+  { id:'r1',   short:'R1 1.5B',      label:'🧠 DeepSeek R1 1.5B', modelId:'DeepSeek-R1-Distill-Qwen-1.5B-q4f16_1-MLC', think:true,  note:'Smartest — streams its 💭 thinking first' },
+  { id:'q25',  short:'Qwen 2.5 1.5B', label:'⚖️ Qwen 2.5 1.5B',    modelId:'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',         think:false, note:'Balanced quality & speed' },
+  { id:'tiny', short:'Qwen 3 0.6B',   label:'⚡ Qwen 3 0.6B',       modelId:'Qwen3-0.6B-q4f16_1-MLC',                    think:false, note:'Tiny — for weak GPUs' }
+];
+const LS_AI_MODEL = 'islamify_ai_model_v1';
+function aiSelectedModel(){
+  let k = null;
+  try{ k = localStorage.getItem(LS_AI_MODEL); }catch(e){}
+  return AI_MODELS.find(m=>m.id===k) || AI_MODELS[0];
+}
 
 function buildSystemPrompt(ctxItems){
   let ctx = '';
@@ -2532,7 +3062,7 @@ function buildSystemPrompt(ctxItems){
     + ' Answer the user\u2019s question about Islam in simple, concise English (under 180 words).'
     + (ctx ? ' Ground your answer primarily in the CONTEXT SOURCES below and cite them inline like (Qur\'an 2:255) or (Sahih al-Bukhari 1).' : ' Cite the Qur\'an or Sahih al-Bukhari wherever you can.')
     + ' Never invent or paraphrase verses and hadith as quotes. If you are not sure, say so honestly and advise asking a qualified scholar for rulings — never issue fatwas.'
-    + ' Be kind, hopeful and practical. Do not show your reasoning steps — reply with the final answer only. /no_think'
+    + ' Be kind, hopeful and practical. Think step by step about the sources, then give your final answer clearly.'
     + (ctx ? '\n\nCONTEXT SOURCES (from Islamify\'s library):\n' + ctx : '');
 }
 
@@ -2547,54 +3077,101 @@ async function loadQwenModel(){
     aiNeural = false;
     localStorage.setItem(LS_AI_NEURAL, '0');
     updateAIStatus();
-    $('#aiNeuralToggle').textContent = '⚡ Enable Qwen 3 (on-device)';
-    addAIMessage('bot', "⚠️ Qwen 3 needs WebGPU (Chrome or Edge 113+). This browser doesn't support it yet, so I'll stay in fast Retrieval mode — every answer still comes from this site's authentic library, fully offline.");
+    $('#aiNeuralToggle').textContent = '⚡ Enable Neural AI (on-device)';
+    addAIMessage('bot', "⚠️ Neural AI needs WebGPU (Chrome or Edge 113+). This browser doesn't support it yet, so I'll stay in fast Retrieval mode — every answer still comes from this site's authentic library, fully offline.");
     return;
   }
   llmLoading = true;
   aiShowProgress(true);
+  renderAIModels();
   const bar = $('#aiProgBar'), lbl = $('#aiProgLabel');
   if(bar) bar.style.width = '0%';
   if(lbl) lbl.textContent = 'Fetching WebLLM engine…';
   try{
     const webllm = await import('https://esm.run/@mlc-ai/web-llm');
-    let modelId = QWEN_MODEL_ID;
-    try{
-      const list = (webllm.prebuiltAppConfig && webllm.prebuiltAppConfig.model_list) || [];
-      const found = list.find(m=>m.model_id === QWEN_MODEL_ID)
-        || list.find(m=>/Qwen3-0\.6B/.test(m.model_id))
-        || list.find(m=>/Qwen2\.5-0\.5B-Instruct/.test(m.model_id));
-      if(found) modelId = found.model_id;
-    }catch(e){}
-    const engine = await webllm.CreateMLCEngine(modelId, {
-      initProgressCallback: p=>{
-        const pct = Math.round((p.progress || 0) * 100);
-        if(bar) bar.style.width = pct + '%';
-        if(lbl) lbl.textContent = p.text || ('Loading Qwen 3 0.6B… ' + pct + '%');
-        const s = $('#aiStatus');
-        if(s) s.textContent = 'Qwen 3 · ' + pct + '%';
-      }
-    });
-    llmEngine = engine;
-    llmReady = true;
-    llmLoading = false;
-    aiShowProgress(false);
-    updateAIStatus();
-    addAIMessage('bot', "✨ **Qwen 3 0.6B is ready.** I now write full, natural answers — streamed live, generated 100% on your device (nothing is sent to any server), grounded in this site's library with sources. Ask me anything.");
+    /* resolve the selected model against the prebuilt list; on any failure
+       walk DOWN the chain r1 → q25 → tiny so weak GPUs still get a model */
+    const list = (webllm.prebuiltAppConfig && webllm.prebuiltAppConfig.model_list) || [];
+    const chain = [];
+    const sel = aiSelectedModel();
+    AI_MODELS.slice(AI_MODELS.indexOf(sel)).forEach(m=>chain.push(m));
+    let modelId = null, used = null, lastErr = null;
+    for(const m of chain){
+      try{
+        const found = list.find(x=>x.model_id === m.modelId)
+          || list.find(x=>x.model_id.indexOf(m.modelId.split('-q4')[0]) === 0)
+          || list.find(x=>new RegExp(m.modelId.split('-q4')[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).test(x.model_id));
+        if(!found) throw new Error('model not in prebuilt list');
+        modelId = found.model_id; used = m;
+        const engine = await webllm.CreateMLCEngine(modelId, {
+          initProgressCallback: p=>{
+            const pct = Math.round((p.progress || 0) * 100);
+            if(bar) bar.style.width = pct + '%';
+            if(lbl) lbl.textContent = (p.text || ('Loading ' + used.label + '… ' + pct + '%'));
+            const s = $('#aiStatus');
+            if(s) s.textContent = used.short + ' · ' + pct + '%';
+          }
+        });
+        llmEngine = engine;
+        llmReady = true;
+        llmLoading = false;
+        if(used.id !== sel.id){ try{ localStorage.setItem(LS_AI_MODEL, used.id); }catch(e){} }
+        aiShowProgress(false);
+        renderAIModels();
+        updateAIStatus();
+        addAIMessage('bot', used.think
+          ? "✨ **" + used.label + " is ready.** I now write full, natural answers and stream my 💭 thinking first, so you can watch the reasoning before the final answer. Everything runs 100% on your device and is grounded in this site's library with sources. Ask me anything."
+          : "✨ **" + used.label + " is ready.** Full, natural answers — streamed live, generated 100% on your device (nothing is sent to any server), grounded in this site's library with sources. Ask me anything.");
+        return;
+      }catch(err){ lastErr = err; console.warn('model load failed: ' + m.id, err); }
+    }
+    throw lastErr || new Error('no model loaded');
   }catch(e){
-    console.warn('Qwen load failed', e);
+    console.warn('Neural AI load failed', e);
     llmReady = false;
     llmLoading = false;
     aiNeural = false;
     localStorage.setItem(LS_AI_NEURAL, '0');
     aiShowProgress(false);
+    renderAIModels();
     updateAIStatus();
-    $('#aiNeuralToggle').textContent = '⚡ Enable Qwen 3 (on-device)';
-    addAIMessage('bot', "⚠️ Could not load Qwen 3 (offline, CDN blocked, or not enough GPU memory). Retrieval mode is still fully functional and answers from the site's knowledge base.");
+    $('#aiNeuralToggle').textContent = '⚡ Enable Neural AI (on-device)';
+    addAIMessage('bot', "⚠️ Could not load the model (offline, CDN blocked, or not enough GPU memory for R1 1.5B — try the ⚖️ Qwen 2.5 or ⚡ Qwen 3 0.6B buttons). Retrieval mode is still fully functional and answers from the site's knowledge base.");
   }
 }
 
 /* AI events */
+/* v1.4: model switcher — 3 buttons, choice kept in localStorage */
+function renderAIModels(){
+  const wrap = $('#aiModels');
+  if(!wrap) return;
+  const sel = aiSelectedModel();
+  wrap.innerHTML = '';
+  AI_MODELS.forEach(m=>{
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = m.label;
+    b.title = m.note + ' (' + (m.modelId.indexOf('1.5B') !== -1 ? '~1.1 GB one-time download' : '~0.5 GB one-time download') + ')';
+    b.classList.toggle('on', m.id === sel.id);
+    b.disabled = !!llmLoading;
+    b.addEventListener('click', async ()=>{
+      if(llmLoading || m.id === aiSelectedModel().id) return;
+      try{ localStorage.setItem(LS_AI_MODEL, m.id); }catch(e){}
+      if(llmReady){
+        /* hot-swap: unload current model, load the newly chosen one */
+        try{ if(llmEngine) llmEngine.unload(); }catch(e){}
+        llmEngine = null;
+        llmReady = false;
+        addAIMessage('bot', 'Switching to **' + m.label + '** — ' + m.note + '.');
+        await loadQwenModel();
+      } else {
+        renderAIModels();
+        addAIMessage('bot', '**' + m.label + '** selected — ' + m.note + '. Tap ⚡ *Enable Neural AI* to download and activate it.');
+      }
+    });
+    wrap.appendChild(b);
+  });
+}
 $('#aiNeuralToggle').addEventListener('click', async ()=>{
   if(llmReady){
     aiNeural = false;
@@ -2603,12 +3180,12 @@ $('#aiNeuralToggle').addEventListener('click', async ()=>{
     llmEngine = null;
     llmReady = false;
     updateAIStatus();
-    $('#aiNeuralToggle').textContent = '⚡ Enable Qwen 3 (on-device)';
-    addAIMessage('bot', "Qwen 3 disabled and unloaded from GPU memory (the download stays cached — re-enabling is instant). Retrieval mode active.");
+    $('#aiNeuralToggle').textContent = '⚡ Enable Neural AI (on-device)';
+    addAIMessage('bot', "Neural AI disabled and unloaded from GPU memory (the download stays cached — re-enabling is instant). Retrieval mode active.");
   } else {
     aiNeural = true;
     localStorage.setItem(LS_AI_NEURAL, '1');
-    $('#aiNeuralToggle').textContent = '⏸ Disable Qwen 3';
+    $('#aiNeuralToggle').textContent = '⏸ Disable Neural AI';
     await loadQwenModel();
   }
 });
@@ -3137,8 +3714,8 @@ let wl=null;const focus=on=>{document.body.classList.toggle('focus',on);toast(on
 const wake=async on=>{try{if(on){wl=await navigator.wakeLock.request('screen');toast('Screen will stay on')}else if(wl){await wl.release();wl=null}}catch(e){toast('Screen wake lock not available here')}};
 const cycle=()=>{const o=['auto','light','dark','oled','sepia'];S.theme=o[(o.indexOf(S.theme)+1)%o.length];apply();save();toast('Theme: '+S.theme)};
 /* palette */
-const pal=mk('pal','<input id="palq" placeholder="Surah name, tab, or 2:255 …" aria-label="Quick search" autocomplete="off"><ul id="pall" role="listbox"></ul>');
-let res=[],sel=0;const nz=s=>String(s||'').toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]/g,'');
+const pal=mk('pal','<input id="palq" placeholder="Search everything — surah, prophet, sunnah, hadith, tab, or 2:255 …" aria-label="Quick search" autocomplete="off"><ul id="pall" role="listbox"></ul>');
+let res=[],sel=0;const nz=s=>{let t=String(s||'').toLowerCase();try{if(typeof normAr==='function')return normAr(t).replace(/[^a-z0-9\u0600-\u06ff]/g,'')}catch(e){}return t.replace(/[\u064B-\u0652\u0653-\u065F\u0670\u0640]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[^a-z0-9\u0600-\u06ff]/g,'')};
 let palHadith=null; /* v1: lazy normalized Bukhari index for instant palette search */
 function palHadithIndex(){if(palHadith)return palHadith;palHadith=[];try{if(typeof allHadiths!=='undefined')allHadiths.forEach(h=>{palHadith.push({h,hay:nz(h.english+' '+(h.narrator||''))})})}catch(e){}return palHadith}
 function build(q){const out=[];$$('nav a[data-tab]').forEach(a=>out.push({t:a.textContent.trim(),k:'Go to',f:()=>go(a.dataset.tab)}));
@@ -3151,10 +3728,15 @@ const n=nz(q);
 if(n.length>2){const H=palHadithIndex();let c=0;for(const r of H){if(c>=8)break;if(r.hay.includes(n)){const hh=r.h;out.push({t:'Bukhari'+(hh.id!=null?' #'+hh.id:'')+' — '+(hh.english||'').slice(0,80)+'…',k:'Hadith',f:()=>{go('hadith');try{const inp=$('#hadithSearch');inp.value=(hh.english||'').slice(0,60);applyHadithFilter()}catch(e){}}});c++}}}
 return(n?out.filter(i=>nz(i.key||i.t).includes(n)||sub(nz(i.key||i.t),n)):out).slice(0,30)}
 const sub=(h,n)=>{let i=0;for(const c of h)if(c===n[i]&&++i===n.length)return true;return n.length>2&&false};
-function draw(){const l=$('#pall');l.innerHTML='';res.forEach((r,i)=>{const li=document.createElement('li');li.setAttribute('role','option');li.setAttribute('aria-selected',i===sel);li.innerHTML='<span></span><small>'+r.k+'</small>';li.firstChild.textContent=r.t;li.onclick=()=>run(i);l.appendChild(li)});const s=$('#pall [aria-selected=true]');s&&s.scrollIntoView({block:'nearest'})}
+/* v1.3: highlight the query inside palette rows (raw substring; skips when
+   the normalized match came from diacritic folding) */
+let lastQ='';
+const escP=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hlRow=(t,q)=>{t=String(t==null?'':t);q=String(q||'').trim();if(!q)return escP(t);const i=t.toLowerCase().indexOf(q.toLowerCase());if(i<0)return escP(t);return escP(t.slice(0,i))+'<mark>'+escP(t.slice(i,i+q.length))+'</mark>'+escP(t.slice(i+q.length))};
+function draw(){const l=$('#pall');l.innerHTML='';res.forEach((r,i)=>{const li=document.createElement('li');li.setAttribute('role','option');li.setAttribute('aria-selected',i===sel);li.innerHTML='<span></span><small>'+r.k+'</small>';li.firstChild.innerHTML=hlRow(r.t,lastQ);li.onclick=()=>run(i);l.appendChild(li)});const s=$('#pall [aria-selected=true]');s&&s.scrollIntoView({block:'nearest'})}
 function run(i){const r=res[i];if(r){pal.close();r.f()}}
-const openPal=()=>{pal.showModal();$('#palq').value='';res=build('');sel=0;draw();$('#palq').focus()};
-$('#palq').addEventListener('input',e=>{res=build(e.target.value);sel=0;draw()});
+const openPal=()=>{pal.showModal();$('#palq').value='';lastQ='';res=build('');sel=0;draw();$('#palq').focus()};
+$('#palq').addEventListener('input',e=>{lastQ=e.target.value;res=build(e.target.value);sel=0;draw()});
 $('#palq').addEventListener('keydown',e=>{if(e.key==='ArrowDown'){sel=Math.min(sel+1,res.length-1);draw();e.preventDefault()}else if(e.key==='ArrowUp'){sel=Math.max(sel-1,0);draw();e.preventDefault()}else if(e.key==='Enter')run(sel)});
 $('#ui-find').onclick=openPal;
 /* tools dialog */
@@ -3168,7 +3750,7 @@ const tools=mk('tools','<div class="ui-in"><button class="ui-x" aria-label="Clos
 '<h3>Tasbih</h3><div id="tsb" role="button" tabindex="0" aria-label="Tap to count"></div><div class="ui-row"><label>Goal</label>'+seg('goal',[[33,'33'],[99,'99'],[100,'100'],[1000,'1000']])+'<button class="ui-btn" id="tsR">Reset</button></div>'+
 '<h3>Offline and storage</h3><p class="ui-row" id="sto">Checking storage…</p><div class="ui-row"><button class="ui-btn" id="bS">Ask browser to keep my data</button></div>'+
 '<h3>Privacy: exactly what leaves your device</h3><table class="ui-tbl"><tr><td>Stays on device</td><td>Your progress, bookmarks, settings, prayer answers, AI questions, cached Qur’ān and hadith.</td></tr>'+
-'<tr><td>Fetched from the web</td><td>Qur’ān text (alquran.cloud), hadith data (jsDelivr/GitHub), audio (islamic.network), fonts (Google Fonts), and the optional Qwen 3 0.6B model (WebLLM engine from jsDelivr, weights from Hugging Face — one-time download, then cached; generation always runs entirely on your device). These servers can see your IP address.</td></tr>'+
+'<tr><td>Fetched from the web</td><td>Qur’ān text (alquran.cloud), hadith data (jsDelivr/GitHub), audio (islamic.network), fonts (Google Fonts), and the optional on-device AI model — DeepSeek R1 1.5B (default), Qwen 2.5 1.5B, or Qwen 3 0.6B (WebLLM engine from jsDelivr, weights from Hugging Face — one-time download, then cached; generation always runs entirely on your device). These servers can see your IP address.</td></tr>'+
 '<tr><td>Prayer times</td><td>Your coordinates or city are sent to Aladhan to calculate times.</td></tr>'+
 '<tr><td>Google</td><td>Google’s sign-in script loads with the page. Signing in shares your Google profile with this app. Never sign in and nothing is synced.</td></tr>'+
 '<tr><td>Not used</td><td>No analytics, no ads, no trackers of our own.</td></tr></table>'+
@@ -3346,6 +3928,432 @@ return'<p class="ui-row">Current streak: <b>'+st+' day(s)</b></p>'+B.map(b=>'<di
 V.new=()=>'<h3>What’s new</h3><ul style="margin:.4rem 1.2rem;line-height:1.9;font-size:.9rem"><li>Select any text for copy with citation, image card, share, Ask AI and notes</li><li>Continue where you left off, and J/K/C verse keys</li><li>Duas, prayer guide, terms, converters and daily reflection</li><li>High contrast, dyslexia spacing, compact cards, privacy blur</li><li>Visit counter, badges and backup</li></ul>';
 const ver='2026.11-b';if(ls('islamify_seen_v1','')!==ver){sv('islamify_seen_v1',ver);setTimeout(()=>{if(!$('dialog[open]')&&!$('body.gated')){cur='new';dlg.showModal();show('new')}},2500)}
 }catch(err){console.warn('Islamify library failed',err)}})();
+</script>
+<style id="v12-css">
+/* ===== v1.2: verse flash, global results panel, sug-more row ===== */
+.ayah{border-radius:10px}
+.ayah.flash{animation:ayflash 2.2s ease}
+@keyframes ayflash{0%{background:rgba(200,168,107,.45)}70%{background:rgba(200,168,107,.16)}100%{background:transparent}}
+.sug-more{border-top:1px solid var(--border);margin-top:.3rem}
+.sug-more .t{color:var(--primary);font-weight:700}
+.gres{position:fixed;inset:0;z-index:9600;background:rgba(8,18,15,.5);backdrop-filter:blur(3px);display:flex;align-items:flex-start;justify-content:center;padding:4vh 14px 6vh;animation:gresFade .16s ease}
+.gres[hidden]{display:none}
+@keyframes gresFade{from{opacity:0}to{opacity:1}}
+.gres-panel{background:var(--paper);color:var(--text);width:min(880px,100%);max-height:88vh;display:flex;flex-direction:column;border-radius:18px;box-shadow:0 24px 70px rgba(0,0,0,.3);overflow:hidden;animation:gresIn .2s ease}
+@keyframes gresIn{from{opacity:0;transform:translateY(16px) scale(.985)}to{opacity:1;transform:none}}
+.gres-head{display:flex;align-items:center;gap:.7rem;padding:.95rem 1.15rem;border-bottom:1px solid var(--border);flex-wrap:wrap;background:var(--card)}
+.gres-q{font-weight:700;font-size:1.02rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gres-chips{display:flex;gap:.35rem;flex-wrap:wrap;font-size:.75rem;color:var(--text-light);flex:1;min-width:180px}
+.gres-chips b{color:var(--primary)}
+.gres-chips span{background:var(--soft);border:1px solid var(--border);border-radius:99px;padding:.2rem .6rem;white-space:nowrap}
+.gres-x{margin-left:auto;background:var(--soft);border:1px solid var(--border);color:var(--text-light);width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:1rem;line-height:1;flex:0 0 auto}
+.gres-x:hover{color:var(--danger);border-color:var(--danger)}
+.gres-body{overflow:auto;padding:.2rem 1.15rem 1.3rem;flex:1}
+.gres-h{font-size:.68rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-light);padding:.95rem 0 .3rem;display:flex;align-items:center;gap:.5rem}
+.gres-h::after{content:'';flex:1;height:1px;background:var(--border)}
+.gres-v{display:flex;gap:.7rem;padding:.6rem .35rem;border-bottom:1px dashed var(--border);cursor:pointer;border-radius:10px;align-items:flex-start}
+.gres-v:hover{background:var(--soft)}
+.gres-ref{flex:0 0 auto;background:var(--primary);color:#fff;font-size:.72rem;font-weight:700;border-radius:8px;padding:.3rem .55rem;margin-top:.1rem;font-variant-numeric:tabular-nums}
+.gres-vt{flex:1;min-width:0}
+.gres-en{font-size:.88rem;color:var(--text-light);line-height:1.55}
+.gres-en mark{background:rgba(200,168,107,.3);color:inherit;padding:0 .12em;border-radius:3px}
+.gres-ar{font-family:'Amiri',serif;direction:rtl;text-align:right;font-size:1.3rem;line-height:1.9;color:var(--primary-dark);margin-top:.25rem}
+html[data-theme=dark] .gres-ar,html[data-theme=oled] .gres-ar{color:#d9f0e9}
+html[data-theme=dark] .gres-en mark,html[data-theme=oled] .gres-en mark{background:rgba(200,168,107,.28);color:#f2e6c9}
+.gres-i{display:flex;align-items:center;gap:.6rem;padding:.55rem .35rem;border-bottom:1px dashed var(--border);cursor:pointer;border-radius:10px}
+.gres-i:hover{background:var(--soft)}
+.gres-i .g-t{flex:1;min-width:0;font-size:.88rem;font-weight:600;color:var(--text)}
+.gres-i .g-s{font-size:.74rem;color:var(--text-light);max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gres-gate{display:flex;align-items:center;gap:.7rem;padding:.9rem 1rem;border:1px dashed var(--border);border-radius:12px;margin:.9rem 0 .3rem;color:var(--text-light);font-size:.86rem;line-height:1.5;flex-wrap:wrap}
+.gres-gate>div{flex:1;min-width:200px}
+.gres-gate button{background:var(--primary);color:#fff;border:0;border-radius:9px;padding:.5rem .9rem;cursor:pointer;font:inherit;font-weight:600}
+.gres-gate button.alt{background:var(--soft);color:var(--primary);border:1px solid var(--border)}
+.gres-empty{padding:2rem 1rem;text-align:center;color:var(--text-light);font-size:.92rem;line-height:1.8}
+.gres-tip{font-size:.74rem;color:var(--text-light);padding:.7rem .2rem .2rem;text-align:center}
+@media(max-width:640px){ .gres{padding:2.5vh 8px 4vh} .gres-ar{font-size:1.16rem} .gres-chips span{padding:.14rem .5rem} .gres-q{font-size:.95rem} }
+@media (prefers-reduced-motion: reduce){ .gres,.gres-panel{animation:none} .ayah.flash{animation:none} }
+</style>
+<script id="v12-js">
+(function(){
+/* ═════════ v1.2 module: whole-Qur'ān verse search · unified global results panel · recent searches ═════════
+   Exposed as window.__v12 — block 1 (main script) calls these hooks guarded by typeof. */
+  const LS_RECENT = 'islamify_recent_v1', QFULL_KEY = 'islamify_quran_full_v1';
+  const esc12 = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
+  const toast12 = m => { const t = document.getElementById('ui-toast'); if(t){ t.textContent = m; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'), 2400); } };
+
+  /* ---------- recent searches ---------- */
+  function getRecent(){
+    try{ const a = JSON.parse(localStorage.getItem(LS_RECENT) || '[]'); return Array.isArray(a) ? a.filter(x => typeof x === 'string' && x.trim()).slice(0, 8) : []; }
+    catch(e){ return []; }
+  }
+  function addRecent(q){
+    q = (q || '').trim(); if(!q || q.length > 80) return;
+    let a = getRecent().filter(x => x.toLowerCase() !== q.toLowerCase());
+    a.unshift(q); a = a.slice(0, 8);
+    try{ localStorage.setItem(LS_RECENT, JSON.stringify(a)); }catch(e){}
+  }
+  function clearRecent(){ try{ localStorage.removeItem(LS_RECENT); }catch(e){} }
+  /* Paint recents into the suggest box (empty query). Returns item list for keyboard nav, or null. */
+  function recent(box, inp){
+    if(!box || !inp) return null;
+    const a = getRecent();
+    if(!a.length) return null;
+    const items = a.map((q, i) => ({
+      g:'recent', score:100 - i, label:q, sub:'↻', hint:true,
+      act: () => { inp.value = q; inp.dispatchEvent(new Event('input', {bubbles:true})); inp.focus(); }
+    }));
+    items.push({ g:'recent', score:0, label:'Clear recent searches', sub:'✕', hint:true,
+      act: () => { clearRecent(); inp.value = ''; inp.dispatchEvent(new Event('input', {bubbles:true})); inp.focus(); } });
+    let html = '<div class="sug-h">🕘 Recent searches</div>';
+    items.forEach((it, i) => {
+      html += '<div class="sug-i" role="option" data-idx="' + i + '" aria-selected="false"><span class="t">' + esc12(it.label) + '</span><span class="s">' + esc12(it.sub) + '</span></div>';
+    });
+    box.innerHTML = html; box.hidden = false; inp.setAttribute('aria-expanded','true');
+    return items;
+  }
+  /* "See all results" row appended to the suggestion dropdown */
+  function moreRow(raw, idx){
+    raw = (raw || '').trim(); if(!raw) return null;
+    return {
+      item: { g:'more', score:1, hint:true, label:'', sub:'', act: () => gOpen(raw) },
+      html: '<div class="sug-i sug-more" role="option" data-idx="' + idx + '" aria-selected="false"><span class="t">🔎 See all results for “' + esc12(raw) + '”</span><span class="s">Enter ↵</span></div>'
+    };
+  }
+
+  /* ---------- whole-Qur'ān verse index (lazy fetch, cached in IndexedDB) ---------- */
+  let _vRows = null, _vHay = null, _vState = 'idle', _vP = null, _vErr = null;
+  function ensureVerseIndex(){
+    if(_vState === 'ready') return Promise.resolve(true);
+    if(_vState === 'loading') return _vP;
+    _vState = 'loading'; _vErr = null;
+    _vP = (async () => {
+      try{
+        let rows = null;
+        try{ rows = await idbGet(QFULL_KEY); }catch(e){}
+        if(!rows || !rows.length){
+          /* note: the /quran endpoint ignores the editions list — fetch the two editions separately */
+          const both = await Promise.all([
+            fetch('https://api.alquran.cloud/v1/quran/quran-uthmani').then(r => { if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
+            fetch('https://api.alquran.cloud/v1/quran/en.sahih').then(r => { if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+          ]);
+          const pick = j => { const d = j.data; return Array.isArray(d) ? (d[0] && d[0].surahs) : (d && d.surahs); };
+          const aS = pick(both[0]), eS = pick(both[1]);
+          if(!aS || !aS.length) throw new Error('unexpected API response');
+          rows = [];
+          for(let si = 0; si < aS.length; si++){
+            const S = aS[si], E = (eS && eS[si]) || {ayahs:[]}, ay = S.ayahs, ea = E.ayahs || [];
+            for(let vi = 0; vi < ay.length; vi++) rows.push([S.number, ay[vi].numberInSurah, ay[vi].text, ea[vi] ? ea[vi].text : '']);
+          }
+          try{ await idbSet(QFULL_KEY, rows); }catch(e){ /* cache optional */ }
+        }
+        _vRows = rows;
+        await buildHay();
+        _vState = 'ready';
+        return true;
+      }catch(e){
+        _vState = 'error'; _vErr = e; _vP = null;
+        throw e;
+      }
+    })();
+    return _vP;
+  }
+  function buildHay(){
+    _vHay = new Array(_vRows.length);
+    let i = 0;
+    return new Promise(res => {
+      const step = () => {
+        const end = Math.min(i + 900, _vRows.length);
+        for(; i < end; i++){
+          const r = _vRows[i];
+          _vHay[i] = normAr(r[3] || '') + '\u0001' + normAr(r[2] || '');
+        }
+        if(i < _vRows.length) setTimeout(step, 0); else res();
+      };
+      step();
+    });
+  }
+  function searchVerses(nq, limit){
+    if(_vState !== 'ready' || !nq) return {hits: [], total: 0};
+    const out = [];
+    for(let i = 0; i < _vRows.length; i++){
+      const h = _vHay[i], sc = h.indexOf('\u0001');
+      let s = 0;
+      const ei = h.indexOf(nq);
+      if(ei !== -1){
+        const inEn = ei < sc;
+        s += inEn ? 6 : 9;
+        if(ei === 0) s += 3;
+        if(inEn && h.indexOf(nq, sc) !== -1) s += 4; /* in both */
+      }
+      if(s) out.push({i, s});
+    }
+    out.sort((a, b) => b.s - a.s || a.i - b.i);
+    return { hits: out.slice(0, limit || 10).map(x => { const r = _vRows[x.i]; return {s:r[0], v:r[1], ar:r[2], en:r[3], sc:x.s}; }), total: out.length };
+  }
+  /* Hook called from collectSuggest. Pushes verse items into groups.verse; returns total matches. */
+  function verseSuggest(nq, raw, groups, opts){
+    const lim = (opts && opts.verseLimit != null) ? opts.verseLimit : 4;
+    if(_vState === 'ready'){
+      const r = searchVerses(nq, lim);
+      r.hits.forEach(h => {
+        groups.verse.push({ g:'verse', score: 40 + h.sc, label: (h.en || '').replace(/\s+/g, ' ').slice(0, 110), sub: h.s + ':' + h.v, act: () => openSurah(h.s, h.v) });
+      });
+      return r.total;
+    }
+    if(_vState === 'idle'){
+      groups.verse.push({ g:'verse', score: 5, hint: true, label: '🌐 Search inside all 6,236 verses — tap to download the Qur\'ān text index (one-time)', sub: '↧', act: () => {
+        toast12('Downloading Qur\'ān index…');
+        ensureVerseIndex().then(() => {
+          toast12('Verse search ready ✓');
+          const inp = document.getElementById('searchInput');
+          if(inp) inp.dispatchEvent(new Event('input', {bubbles:true}));
+        }).catch(() => toast12('⚠ Verse index download failed — check connection'));
+      }});
+      return 0;
+    }
+    return 0; /* loading or error → no verse rows this round */
+  }
+
+  /* ---------- unified global results panel ---------- */
+  let _gEl = null, _gLastFocus = null;
+  function gBuild(){
+    if(_gEl) return _gEl;
+    const d = document.createElement('div');
+    d.id = 'gres'; d.hidden = true;
+    d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-label', 'Global search results');
+    d.innerHTML = '<div class="gres-panel"><div class="gres-head"><span class="gres-q"></span><div class="gres-chips"></div><button class="gres-x" aria-label="Close results">✕</button></div><div class="gres-body"></div></div>';
+    d.addEventListener('mousedown', e => { if(e.target === d) gClose(); });
+    d.querySelector('.gres-x').addEventListener('click', gClose);
+    document.body.appendChild(d);
+    _gEl = d;
+    return d;
+  }
+  function gOpen(raw){
+    raw = (raw || '').trim(); if(!raw) return;
+    addRecent(raw);
+    _gLastFocus = document.activeElement;
+    const d = gBuild();
+    d.hidden = false;
+    d.querySelector('.gres-q').textContent = '🔎 ' + raw;
+    renderPanel(raw);
+    const x = d.querySelector('.gres-x');
+    if(x) try{ x.focus(); }catch(e){}
+  }
+  function gClose(){
+    if(_gEl) _gEl.hidden = true;
+    if(_gLastFocus && _gLastFocus.focus){ try{ _gLastFocus.focus(); }catch(e){} }
+  }
+  function gateHTML(){
+    if(_vState === 'loading') return '<div>⏳ Downloading the full Qur\'ān text (one-time, then cached)…</div>';
+    if(_vState === 'error') return '<div>⚠ Couldn\'t download the verse index (' + esc12((_vErr && _vErr.message) || 'network error') + ').</div><button class="alt" data-gact="retry">Retry</button>';
+    return '<div>🌐 Matches above come from surah & story titles. Download the full Qur\'ān text once (a few MB) to also search <b>inside every verse</b> — Arabic + English, then it works offline.</div><button data-gact="dl">Enable verse search</button>';
+  }
+  function wireGate(el, raw){
+    const b = el.querySelector('[data-gact]');
+    if(!b) return;
+    b.addEventListener('click', () => {
+      if(_vState === 'loading') return;
+      ensureVerseIndex().then(() => {
+        toast12('Verse search ready ✓');
+        if(_gEl && !_gEl.hidden) renderPanel(raw);
+        else { const inp = document.getElementById('searchInput'); if(inp) inp.dispatchEvent(new Event('input', {bubbles:true})); }
+      }).catch(() => { toast12('⚠ Verse index download failed'); if(_gEl && !_gEl.hidden) renderPanel(raw); });
+      renderPanel(raw); /* repaint gate into loading state right away */
+    });
+  }
+  function renderPanel(raw){
+    const d = _gEl; if(!d) return;
+    const body = d.querySelector('.gres-body');
+    let out = [];
+    try{ out = collectSuggest(raw, {verseLimit: 24, hadLimit: 8, sunLimit: 50, sunCatLimit: 12}) || []; }
+    catch(e){ console.warn('panel collect failed', e); }
+    const counts = out.counts || {};
+    const chips = [
+      ['📖', 'verses', counts.verse], ['📕', 'surahs', counts.surah], ['🕊️', 'prophets', counts.prophet], ['🌿', 'sunnah', counts.sunnah], ['📚', 'hadith', counts.hadith]
+    ].filter(c => c[2] > 0).map(c => '<span>' + c[0] + ' <b>' + c[2] + '</b> ' + c[1] + '</span>').join('');
+    d.querySelector('.gres-chips').innerHTML = chips || '<span>0 matches yet</span>';
+
+    const rows = out.filter(x => !x.hint);
+    if(!rows.length){
+      let h = '<div class="gres-empty">No matches for “' + esc12(raw) + '”.<br>Try another spelling — Arabic or English — or ask the <b>Ask AI</b> tab in your own words.</div>';
+      if(_vState === 'loading' || _vState === 'error') h += '<div class="gres-gate" id="gresGate">' + gateHTML() + '</div>';
+      body.innerHTML = h;
+      const gate = body.querySelector('#gresGate'); if(gate) wireGate(gate, raw);
+      return;
+    }
+    const H = { verse:'📖 Qur\'ān verses', surah:'📕 Surahs', prophet:'🕊️ Prophets', sunnah:'🌿 Sunnah', hadith:'📚 Hadith' };
+    let html = '', lastG = null;
+    const qRaw = raw;
+    rows.forEach((it, idx) => {
+      if(it.g !== lastG){ html += '<div class="gres-h">' + (H[it.g] || it.g) + '</div>'; lastG = it.g; }
+      if(it.g === 'verse'){
+        const m = /^(\d+):(\d+)$/.exec(it.sub || '');
+        let ar = '', en = it.label;
+        if(m && _vState === 'ready'){
+          const r = _vRows.find(x => x[0] === +m[1] && x[1] === +m[2]);
+          if(r){ ar = r[2]; en = r[3]; }
+        }
+        const enH = (typeof hiMark === 'function') ? hiMark(en, qRaw) : esc12(en);
+        const arH = ar ? '<div class="gres-ar">' + hiMark(ar, qRaw) + '</div>' : '';
+        html += '<div class="gres-v" data-idx="' + idx + '"><span class="gres-ref">' + esc12(it.sub) + '</span><div class="gres-vt"><div class="gres-en">' + enH + '</div>' + arH + '</div></div>';
+      } else {
+        html += '<div class="gres-i" data-idx="' + idx + '"><span class="g-t">' + esc12(it.label) + '</span>' + (it.sub ? '<span class="g-s">' + esc12(it.sub) + '</span>' : '') + '</div>';
+      }
+    });
+    if(_vState !== 'ready') html += '<div class="gres-gate" id="gresGate">' + gateHTML() + '</div>';
+    html += '<div class="gres-tip">Enter in the search box opens this panel · Esc closes · matching is Arabic-normalized (diacritics &amp; letter forms ignored).</div>';
+    body.innerHTML = html;
+    body.querySelectorAll('.gres-i, .gres-v').forEach(el => {
+      el.addEventListener('click', () => {
+        const it = rows[+el.dataset.idx];
+        gClose();
+        if(it && it.act){ try{ it.act(); }catch(e){ console.warn('result action failed', e); } }
+      });
+    });
+    const gate = body.querySelector('#gresGate');
+    if(gate) wireGate(gate, raw);
+  }
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && _gEl && !_gEl.hidden) gClose();
+  }, true);
+
+  /* show recent searches when the search box is focused with empty text */
+  const _srInp = document.getElementById('searchInput');
+  if(_srInp) _srInp.addEventListener('focus', () => {
+    if(!_srInp.value.trim()) _srInp.dispatchEvent(new Event('input', {bubbles:true}));
+  });
+
+  window.__v12 = { openGlobal: gOpen, closeGlobal: gClose, recent, moreRow, verseSuggest, addRecent, ensureVerseIndex, state: () => _vState };
+})();</script>
+<script id="v13-js">
+/* ============ v1.3: unified suggestions on EVERY search box ============
+   v1.1 mounted the cross-app suggestion dropdown on the Qur'ān search only.
+   This module mounts the SAME unified engine (collectSuggest → surahs,
+   prophets, sunan categories & items, loaded Bukhari hadith, verse refs,
+   the v1.2 whole-Qur'ān verse index and the shared recent-searches list)
+   on the Hadith, Sunan and Prophets search boxes — with keyboard
+   navigation (↑ ↓ Enter Esc), Arabic-normalized <mark> highlighting,
+   recent searches on empty focus, and Enter-to-open the v1.2 global
+   results panel from any tab. The main Qur'ān search keeps its own
+   v1.1/v1.2 wiring; nothing existing is replaced. */
+(function(){
+try{
+const $ = (s,r=document)=>r.querySelector(s);
+const LABELS = {surah:'📖 Surah', verse:'📖 Verse', prophet:'🕊️ Prophet', sunnah:'🌿 Sunnah', hadith:'📚 Hadith', recent:'🕘 Recent searches'};
+if(typeof collectSuggest !== 'function') return;
+
+function mount(inputId){
+  const inp = document.getElementById(inputId);
+  if(!inp || inp.dataset.sugMounted) return;
+  const wrap = inp.closest('.search');
+  if(!wrap) return;
+  const box = document.createElement('div');
+  box.className = 'suggest';
+  box.id = inputId + 'Suggest';
+  box.setAttribute('role','listbox');
+  box.setAttribute('aria-label','Search suggestions across the whole app');
+  box.hidden = true;
+  wrap.appendChild(box);
+  inp.setAttribute('role','combobox');
+  inp.setAttribute('aria-controls', box.id);
+  inp.setAttribute('aria-expanded','false');
+  inp.setAttribute('aria-autocomplete','list');
+  inp.dataset.sugMounted = '1';
+
+  let items = [], sel = -1, t = null, suppress = false;
+
+  const close = ()=>{ box.hidden = true; inp.setAttribute('aria-expanded','false'); };
+  const paint = ()=>{
+    box.querySelectorAll('.sug-i').forEach((el,i)=>{
+      el.classList.toggle('sel', i === sel);
+      el.setAttribute('aria-selected', i === sel ? 'true' : 'false');
+      if(i === sel && el.scrollIntoView) el.scrollIntoView({block:'nearest'});
+    });
+  };
+  const pick = i => {
+    const it = items[i];
+    close();
+    suppress = true; setTimeout(()=>{ suppress = false; }, 350);
+    const q = inp.value.trim();
+    if(q && window.__v12 && window.__v12.addRecent){ try{ window.__v12.addRecent(q); }catch(e){} }
+    if(it && it.act){ try{ it.act(); }catch(e){ console.warn('v1.3 suggest action failed', e); } }
+  };
+  const render = (raw, list, tailHtml) => {
+    items = list; sel = -1;
+    let html = '', lastG = null;
+    if(!list.length){
+      html = '<div class="sug-none">No matches yet — keep typing, try an Arabic spelling, or press <b>Enter ↵</b> for the global results panel.</div>';
+    } else {
+      list.forEach((it,i)=>{
+        if(it.g !== lastG){ html += '<div class="sug-h">'+(LABELS[it.g]||it.g)+'</div>'; lastG = it.g; }
+        const subCls = (it.sub && /[\u0600-\u06FF]/.test(it.sub)) ? 's-ar' : 's';
+        html += '<div class="sug-i" role="option" data-idx="'+i+'" aria-selected="false"><span class="t">'+hiMark(it.label, raw)+'</span>'
+              + (it.hint ? '' : (it.sub ? '<span class="'+subCls+'">'+escapeHtml(it.sub)+'</span>' : '')) + '</div>';
+      });
+      if(tailHtml) html += tailHtml;
+    }
+    box.innerHTML = html;
+    box.hidden = false;
+    inp.setAttribute('aria-expanded','true');
+  };
+  const runSuggest = ()=>{
+    if(suppress){ suppress = false; return; }
+    const raw = inp.value;
+    if(!raw.trim()){
+      /* empty focus → the shared recent-searches list (v1.2) */
+      if(window.__v12 && window.__v12.recent){
+        const ri = window.__v12.recent(box, inp);
+        if(ri && ri.length){ items = ri; sel = -1; return; }
+      }
+      close(); box.innerHTML = '';
+      return;
+    }
+    let list;
+    try{ list = collectSuggest(raw); }catch(e){ return; }
+    let tailHtml = '';
+    if(window.__v12 && window.__v12.moreRow){
+      const mr = window.__v12.moreRow(raw, list.length);
+      if(mr){ tailHtml = mr.html; list = list.concat([mr.item]); }
+    }
+    render(raw, list, tailHtml);
+  };
+  const openGlobal = ()=>{
+    const q = inp.value.trim();
+    if(!q) return;
+    if(window.__v12 && window.__v12.addRecent){ try{ window.__v12.addRecent(q); }catch(e){} }
+    close();
+    if(window.__v12 && window.__v12.openGlobal){ try{ window.__v12.openGlobal(q); }catch(e){} }
+  };
+  inp.addEventListener('input', ()=>{ clearTimeout(t); t = setTimeout(runSuggest, 90); });
+  inp.addEventListener('keydown', e=>{
+    if(box.hidden || !items.length){
+      if(e.key === 'Enter'){ openGlobal(); }
+      return;
+    }
+    if(e.key === 'ArrowDown'){ e.preventDefault(); sel = Math.min(sel+1, items.length-1); paint(); }
+    else if(e.key === 'ArrowUp'){ e.preventDefault(); sel = Math.max(sel-1, 0); paint(); }
+    else if(e.key === 'Enter'){
+      if(sel >= 0){ e.preventDefault(); pick(sel); }
+      else { openGlobal(); }
+    }
+    else if(e.key === 'Escape'){ close(); }
+  });
+  box.addEventListener('mousedown', e=>{
+    const el = e.target.closest('.sug-i');
+    if(el){ e.preventDefault(); pick(parseInt(el.dataset.idx, 10)); }
+  });
+  inp.addEventListener('blur', ()=>setTimeout(close, 220));
+}
+
+['hadithSearch','sunanSearch','storySearch'].forEach(mount);
+
+/* v1.3: screen readers hear result counts and the hadith empty state */
+['#sunanCount','#storiesCount','#hadithNoResults'].forEach(s=>{
+  const el = $(s);
+  if(el){ el.setAttribute('role','status'); el.setAttribute('aria-live','polite'); }
+});
+}catch(err){ console.warn('Islamify v1.3 suggestions failed', err); }
+})();
 </script>
 </body>
 </html>
