@@ -8,6 +8,21 @@
 <!--
   ═══════════════════════════════════════════════════════════════
   ISLAMIFY CHANGELOG
+  v1.4.1 (release gate):
+   • NEW deploy set: index.html + main.html + 00.config (repo root).
+     main.html = this exact app (nothing else changed) plus a small
+     “Developer” button at the VERY BOTTOM of the page. It opens a
+     dialog locked by the password stored in 00.config (PASSWORD=…).
+   • “Arm 1-hour countdown” copies the exact new 00.config and opens
+     the GitHub editor: after “Commit changes”, index.html shows every
+     visitor a live 1-hour “update is coming” countdown (end = commit
+     time + 60 min, or RELEASE_AT) with a link to keep using the old
+     version at main.html. “Disarm” does the reverse.
+   • When 00.config says UPDATE_ACTIVE=false — or on ANY fetch error —
+     index.html instantly redirects to main.html (noscript fallback
+     included). A “Preview countdown in this browser” button lets the
+     developer test index.html locally (localStorage) without
+     committing anything.
   v1.4 (iteration 5):
    • NEW: On-device AI upgraded — the default model is now DeepSeek R1
      1.5B (q4f16_1, ~1.1 GB one-time download, then cached/offline).
@@ -4353,6 +4368,242 @@ function mount(inputId){
   if(el){ el.setAttribute('role','status'); el.setAttribute('aria-live','polite'); }
 });
 }catch(err){ console.warn('Islamify v1.3 suggestions failed', err); }
+})();
+</script>
+
+<!-- ═══ v1.4.1 · DEVELOPER UPDATE TRIGGER — arms the index.html countdown via 00.config ═══ -->
+<div id="devBar">
+  <button id="devTrigger" type="button" title="Developer area — arm or disarm the release countdown">Developer</button>
+</div>
+
+<div id="devModal" role="dialog" aria-modal="true" aria-labelledby="devTitle" hidden>
+  <div id="devCard">
+    <div id="devHead">
+      <strong id="devTitle">Developer · Release countdown</strong>
+      <button id="devClose" type="button" aria-label="Close">×</button>
+    </div>
+
+    <div id="devLock">
+      <p class="devHint">Enter the developer password to arm / disarm the update countdown shown on <code>index.html</code>. The password is read from <code>00.config</code> in the repo.</p>
+      <div class="devRow">
+        <input id="devPass" type="password" inputmode="numeric" autocomplete="off" placeholder="Password" aria-label="Developer password">
+        <button id="devUnlock" type="button">Unlock</button>
+      </div>
+      <p id="devErr" class="devErr" role="alert" hidden></p>
+    </div>
+
+    <div id="devPanel" hidden>
+      <p class="devHint" id="devStatus">Checking 00.config…</p>
+      <div class="devBtns">
+        <button id="devArm" type="button">Arm 1-hour countdown</button>
+        <button id="devDisarm" type="button">Disarm countdown</button>
+      </div>
+      <div class="devBtns">
+        <button id="devPreview" type="button">Preview countdown in this browser</button>
+        <button id="devClear" type="button">Clear local preview</button>
+      </div>
+      <textarea id="devCfg" readonly aria-label="New 00.config content" hidden></textarea>
+      <p class="devNote" id="devNote" hidden></p>
+      <p class="devTiny">GitHub Pages is static, so Arm / Disarm work by commit: the exact new <code>00.config</code> is copied to your clipboard and the GitHub file editor opens — paste it and press “Commit changes”. Every visitor’s <code>index.html</code> picks it up within ~1&nbsp;min; the countdown ends 60&nbsp;min after the commit. “Preview” only affects this browser (testing) and never touches visitors.</p>
+    </div>
+  </div>
+</div>
+
+<style>
+/* v1.4.1 developer trigger styles */
+#devBar{text-align:center;padding:26px 0 12px;opacity:.32}
+#devBar:hover{opacity:.95}
+#devTrigger{background:none;border:1px solid var(--border);color:var(--text-light);font:inherit;font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:4px 16px;border-radius:999px;cursor:pointer}
+#devTrigger:hover{color:var(--text);border-color:var(--accent)}
+#devModal{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(3,10,7,.74);backdrop-filter:blur(3px)}
+#devModal[hidden]{display:none}
+#devCard{width:min(94vw,530px);max-height:86vh;overflow:auto;background:#0d211a;color:#eaf5ef;border:1px solid #275943;border-radius:16px;padding:18px 18px 14px;box-shadow:0 24px 70px rgba(0,0,0,.55);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
+#devHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+#devTitle{font-size:15px}
+#devClose{background:none;border:none;color:#9fc4b0;font-size:22px;line-height:1;cursor:pointer;padding:2px 6px}
+#devClose:hover{color:#eaf5ef}
+.devHint{font-size:12.5px;color:#b9d6c6;margin:6px 0 10px;line-height:1.55}
+.devRow{display:flex;gap:8px}
+#devPass{flex:1;min-width:0;background:#081711;border:1px solid #2c5c46;color:#eaf5ef;border-radius:10px;padding:9px 12px;font-size:14px;outline:none}
+#devPass:focus{border-color:#3ddc97}
+#devUnlock,#devArm,#devDisarm,#devPreview,#devClear{background:#123527;color:#d9f5e7;border:1px solid #2c5c46;border-radius:10px;padding:9px 12px;font-size:12.5px;cursor:pointer;white-space:nowrap}
+#devArm{background:#14532d;border-color:#1f7a44}
+#devDisarm{background:#3f1d1d;border-color:#7a2e2e}
+#devUnlock:hover,#devArm:hover,#devDisarm:hover,#devPreview:hover,#devClear:hover{filter:brightness(1.18)}
+.devBtns{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap}
+.devBtns button{flex:1;min-width:170px}
+.devErr{color:#fda4a4;font-size:12px;margin-top:8px}
+#devCfg{width:100%;height:110px;margin-top:8px;background:#081711;color:#a7f3d0;border:1px solid #2c5c46;border-radius:10px;padding:8px;font:11.5px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;resize:vertical}
+.devNote{font-size:12.5px;color:#fde68a;background:#2a2109;border:1px solid #6b5615;border-radius:10px;padding:8px 10px;margin-top:8px;line-height:1.55;white-space:pre-line}
+.devTiny{font-size:11px;color:#8fb5a1;margin-top:10px;line-height:1.6}
+</style>
+
+<script>
+/* ═══ v1.4.1 · Developer update trigger ═══
+   Controls what index.html shows, via 00.config in the repo root:
+     UPDATE_ACTIVE=false → index.html redirects to main.html instantly
+     UPDATE_ACTIVE=true  → index.html shows a 1-hour release countdown
+   The password itself lives in 00.config (PASSWORD=…). */
+(function () {
+  'use strict';
+  var LS_PREVIEW = '__islamify_update_preview_end';
+  var HOUR = 60 * 60 * 1000;
+  var GH_EDIT = 'https://github.com/omarastepforward-lab/islamify/edit/main/00.config';
+  var GH_RAW  = 'https://raw.githubusercontent.com/omarastepforward-lab/islamify/main/00.config';
+  var FALLBACK_PASS = '270514'; /* only used when 00.config cannot be fetched (e.g. file://) */
+
+  var $ = function (id) { return document.getElementById(id); };
+  var modal = $('devModal'), lock = $('devLock'), panel = $('devPanel');
+  var errEl = $('devErr'), noteEl = $('devNote'), cfgEl = $('devCfg');
+  var currentCfg = null;
+  var copyOkFlag = true;
+
+  function parseCfg(text) {
+    var out = {};
+    String(text).split(/\r?\n/).forEach(function (line) {
+      if (/^\s*#/.test(line)) return;
+      var m = line.match(/^\s*([A-Za-z_]+)\s*=\s*(.*?)\s*$/);
+      if (m) out[m[1]] = m[2];
+    });
+    return out;
+  }
+
+  function fetchCfg() {
+    var t = Date.now();
+    return fetch('00.config?t=' + t, { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.text(); })
+      .catch(function () {
+        return fetch(GH_RAW + '?t=' + t, { cache: 'no-store' }).then(function (r) {
+          if (!r.ok) throw new Error('http ' + r.status); return r.text();
+        });
+      })
+      .then(function (t) { currentCfg = parseCfg(t); return currentCfg; });
+  }
+
+  function buildCfg(active) {
+    var pass = (currentCfg && currentCfg.PASSWORD) || FALLBACK_PASS;
+    var rel = (currentCfg && currentCfg.RELEASE_AT) || '';
+    return '# Islamify site config — controls index.html\n'
+      + '# UPDATE_ACTIVE=false → index.html redirects to main.html\n'
+      + '# UPDATE_ACTIVE=true  → index.html shows a 1-hour release countdown\n'
+      + '# (ends 60 min after this file is committed, or at RELEASE_AT)\n\n'
+      + 'PASSWORD=' + pass + '\n'
+      + 'UPDATE_ACTIVE=' + active + '\n'
+      + 'RELEASE_AT=' + rel + '\n';
+  }
+
+  function legacyCopy(txt) {
+    var ta = document.createElement('textarea');
+    ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function copyText(txt) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(txt).then(
+        function () { return true; },
+        function () { return legacyCopy(txt); }
+      );
+    }
+    return Promise.resolve(legacyCopy(txt));
+  }
+
+  function openModal() {
+    modal.hidden = false;
+    errEl.hidden = true; noteEl.hidden = true; cfgEl.hidden = true;
+    lock.hidden = false; panel.hidden = true;
+    $('devPass').value = '';
+    setTimeout(function () { $('devPass').focus(); }, 30);
+  }
+  function closeModal() { modal.hidden = true; }
+
+  $('devTrigger').addEventListener('click', openModal);
+  $('devClose').addEventListener('click', closeModal);
+  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !modal.hidden) closeModal();
+  });
+
+  function fail(msg) { errEl.textContent = msg; errEl.hidden = false; }
+
+  function revealPanel() {
+    lock.hidden = true;
+    panel.hidden = false;
+    refreshStatus();
+  }
+
+  function unlock() {
+    var entered = $('devPass').value.trim();
+    if (!entered) { fail('Please enter the password.'); return; }
+    fail('Checking password against 00.config…');
+    fetchCfg().then(function (cfg) {
+      errEl.hidden = true;
+      if (entered !== String(cfg.PASSWORD || '').trim()) { fail('Wrong password.'); return; }
+      revealPanel();
+    }).catch(function () {
+      /* 00.config unreachable (file:// or offline) → fall back to the built-in default */
+      if (entered === FALLBACK_PASS) { revealPanel(); }
+      else { fail('Could not read 00.config from here, and that is not the default password.'); }
+    });
+  }
+  $('devUnlock').addEventListener('click', unlock);
+  $('devPass').addEventListener('keydown', function (e) { if (e.key === 'Enter') unlock(); });
+
+  function refreshStatus() {
+    var st = $('devStatus');
+    st.textContent = 'Checking 00.config…';
+    fetchCfg().then(function (cfg) {
+      var active = String(cfg.UPDATE_ACTIVE || '').toLowerCase() === 'true';
+      st.innerHTML = '00.config: reachable · <b>UPDATE_ACTIVE=' + (active
+        ? 'true — the countdown is LIVE on index.html'
+        : 'false — index.html redirects straight to main.html') + '</b>';
+    }).catch(function () {
+      st.innerHTML = '00.config: <b>not reachable from here</b> (opened as a local file or offline). Arm / Disarm still give you the exact text to commit.';
+    });
+  }
+
+  function commitFlow(active) {
+    var txt = buildCfg(active);
+    cfgEl.value = txt;
+    cfgEl.hidden = false;
+    var w = window.open(GH_EDIT, '_blank'); /* opened inside the click so pop-up blockers allow it */
+    copyText(txt).then(function (ok) {
+      copyOkFlag = !!ok;
+      noteEl.textContent = (active ? 'ARMED' : 'DISARMED')
+        + ': the new 00.config is on your clipboard'
+        + (w ? ' and the GitHub editor just opened in a new tab.' : '.')
+        + ' Paste it over the file content and click “Commit changes”. Everyone’s index.html updates within ~1 minute'
+        + (active ? ' — countdown = commit time + 60 minutes.' : '.')
+        + (copyOkFlag ? '' : '\n(Automatic copy failed — select the text below and copy it manually.)');
+      noteEl.hidden = false;
+    });
+  }
+
+  $('devArm').addEventListener('click', function () { commitFlow(true); });
+  $('devDisarm').addEventListener('click', function () { commitFlow(false); });
+
+  $('devPreview').addEventListener('click', function () {
+    try {
+      localStorage.setItem(LS_PREVIEW, String(Date.now() + HOUR));
+      var w = window.open('index.html', '_blank');
+      noteEl.textContent = 'Preview armed for THIS browser only (60 min).'
+        + (w ? ' index.html opened in a new tab.' : ' Open index.html manually.')
+        + ' Visitors are not affected until you commit 00.config.';
+      noteEl.hidden = false;
+    } catch (e) {
+      noteEl.textContent = 'localStorage unavailable: ' + e.message;
+      noteEl.hidden = false;
+    }
+  });
+
+  $('devClear').addEventListener('click', function () {
+    try { localStorage.removeItem(LS_PREVIEW); noteEl.textContent = 'Local preview cleared for this browser.'; }
+    catch (e) { noteEl.textContent = 'Could not clear the preview: ' + e.message; }
+    noteEl.hidden = false;
+  });
 })();
 </script>
 </body>
